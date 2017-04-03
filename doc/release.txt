@@ -1,0 +1,3 @@
+v0.1.0 : add strand for single asio on multi thread
+v0.1.1 : add client cli application
+v0.1.2 : add multi asio on multi thread. modify coding style. 

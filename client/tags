@@ -1,0 +1,129 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BaseCommand	Cli.h	/^class BaseCommand {$/;"	c
+Client	Client.h	/^	Client( const string& host, const string& id ):$/;"	f	class:Client
+Client	Client.h	/^class Client$/;"	c
+ClientHandler	Client.h	/^	ClientHandler(){}$/;"	f	class:ClientHandler
+ClientHandler	Client.h	/^class ClientHandler: public SessionHandler$/;"	c
+ClientHandlerPtr	Client.h	/^typedef boost::shared_ptr<ClientHandler> ClientHandlerPtr;$/;"	t
+ClientPtr	Client.h	/^typedef boost::shared_ptr<Client>	ClientPtr;$/;"	t
+ClientVec	Client.h	/^typedef std::vector<ClientPtr> 				ClientVec;$/;"	t
+ClientVecItor	Client.h	/^typedef std::vector<ClientPtr>::iterator	ClientVecItor;$/;"	t
+ClientWeakPtr	Client.h	/^typedef boost::weak_ptr<Client>		ClientWeakPtr;$/;"	t
+CmdCreateParty	Cli.h	/^	CmdCreateParty(){};$/;"	f	class:CmdCreateParty
+CmdCreateParty	Cli.h	/^class CmdCreateParty :public BaseCommand {$/;"	c
+CmdCreateUser	Cli.h	/^	CmdCreateUser(){};$/;"	f	class:CmdCreateUser
+CmdCreateUser	Cli.h	/^class CmdCreateUser :public BaseCommand {$/;"	c
+CmdLogin	Cli.h	/^	CmdLogin(){};$/;"	f	class:CmdLogin
+CmdLogin	Cli.h	/^class CmdLogin :public BaseCommand {$/;"	c
+CmdRequestJoin	Cli.h	/^	CmdRequestJoin(){};$/;"	f	class:CmdRequestJoin
+CmdRequestJoin	Cli.h	/^class CmdRequestJoin :public BaseCommand {$/;"	c
+CmdSendEco	Cli.h	/^	CmdSendEco(){};$/;"	f	class:CmdSendEco
+CmdSendEco	Cli.h	/^class CmdSendEco :public BaseCommand {$/;"	c
+CmdSendPkt	Cli.h	/^	CmdSendPkt(){};$/;"	f	class:CmdSendPkt
+CmdSendPkt	Cli.h	/^class CmdSendPkt :public BaseCommand {$/;"	c
+CmdStart	Cli.h	/^	CmdStart(){};$/;"	f	class:CmdStart
+CmdStart	Cli.h	/^class CmdStart :public BaseCommand {$/;"	c
+CmdStartTmr	Cli.h	/^	CmdStartTmr(){};$/;"	f	class:CmdStartTmr
+CmdStartTmr	Cli.h	/^class CmdStartTmr :public BaseCommand {$/;"	c
+CmdStop	Cli.h	/^	CmdStop(){};$/;"	f	class:CmdStop
+CmdStop	Cli.h	/^class CmdStop :public BaseCommand {$/;"	c
+CommandFactory	Cli.h	/^class CommandFactory {$/;"	c
+CommandFactoryPtr	Cli.h	/^typedef boost::shared_ptr<CommandFactory> CommandFactoryPtr;$/;"	t
+CommandFuncPtr	Cli.h	/^typedef	BaseCommand* (*CommandFuncPtr)();$/;"	t
+CommandMap	Cli.h	/^	typedef	std::map<std::string, CommandFuncPtr> CommandMap;$/;"	t	class:CommandFactory
+CommandMapItor	Cli.h	/^typedef	std::map<std::string, CommandFuncPtr>::iterator CommandMapItor;$/;"	t
+HOST_CC	Makefile	/^HOST_CC = g++$/;"	m
+HOST_CFLAGS	Makefile	/^HOST_CFLAGS = -Wall -fno-strict-aliasing -g $(HOST_OPT) $(IFLAGS)$/;"	m
+HOST_OPT	Makefile	/^HOST_OPT = -O2$/;"	m
+IFLAGS	Makefile	/^IFLAGS = -I\/usr\/local\/include -I.\/$/;"	m
+LFLAGS	Makefile	/^LFLAGS = -L\/usr\/local\/lib -L..\/lib\/$/;"	m
+LIBS	Makefile	/^LIBS = -llog4cxx -lboost_system -lboost_filesystem -lboost_program_options -lboost_thread -ltorinet$/;"	m
+MASTER_CLIENT	Client.h	/^	static const int MASTER_CLIENT = 0;$/;"	m	class:Client
+OBJS	Makefile	/^OBJS = $(SRCS:.cpp=.o)$/;"	m
+SRCS	Makefile	/^SRCS = Client.cpp Cli.cpp main.cpp$/;"	m
+SplitVector	Cli.h	/^typedef vector< string > SplitVector;$/;"	t
+TARGET	Makefile	/^TARGET = client$/;"	m
+_INCL_H_	Incl.h	2;"	d
+add_seq	Client.h	/^	int					add_seq(){ return m_seq++; }$/;"	f	class:Client
+cbDeadline	Client.h	/^	void cbDeadline()$/;"	f	class:Client
+cbMonitor	Client.h	/^	void cbMonitor( const boost::system::error_code& e )$/;"	f	class:Client
+cbTx	Client.h	/^	void cbTx( const boost::system::error_code& e, int count )$/;"	f	class:Client
+close	Client.h	/^	void close()$/;"	f	class:Client
+command	Cli.h	/^	string 		command;$/;"	m	struct:__anon1
+command_t	Cli.h	/^} command_t;$/;"	t	typeref:struct:__anon1
+connect	Client.cpp	/^bool ClientHandler::connect( VoidPtr sess, VoidWeakPtr owner )$/;"	f	class:ClientHandler
+createCommand	Cli.h	/^BaseCommand* createCommand() {$/;"	f
+error	Client.cpp	/^bool ClientHandler::error( const boost::system::error_code& error, VoidPtr sess, VoidWeakPtr owner )$/;"	f	class:ClientHandler
+g_bTerm	main.cpp	/^bool g_bTerm;$/;"	v
+g_clientVec	main.cpp	/^ClientVec g_clientVec;$/;"	v
+g_cmdFactory	main.cpp	/^CommandFactoryPtr g_cmdFactory;$/;"	v
+g_date	main.cpp	/^const wc8* g_date = __DATE__;$/;"	v
+g_time	main.cpp	/^const wc8* g_time = __TIME__;$/;"	v
+g_txSize	main.cpp	/^int g_txSize;$/;"	v
+g_ver	main.cpp	/^const wc8* g_ver = "CLIENT_R0.1.1";$/;"	v
+handle	Cli.cpp	/^bool CmdCreateParty::handle(string& cli, SplitVector& split)$/;"	f	class:CmdCreateParty
+handle	Cli.cpp	/^bool CmdCreateUser::handle(string& cli, SplitVector& split)$/;"	f	class:CmdCreateUser
+handle	Cli.cpp	/^bool CmdLogin::handle(string& cli, SplitVector& split)$/;"	f	class:CmdLogin
+handle	Cli.cpp	/^bool CmdRequestJoin::handle(string& cli, SplitVector& split)$/;"	f	class:CmdRequestJoin
+handle	Cli.cpp	/^bool CmdSendEco::handle(string& cli, SplitVector& split)$/;"	f	class:CmdSendEco
+handle	Cli.cpp	/^bool CmdSendPkt::handle(string& cli, SplitVector& split)$/;"	f	class:CmdSendPkt
+handle	Cli.cpp	/^bool CmdStart::handle(string& cli, SplitVector& split)$/;"	f	class:CmdStart
+handle	Cli.cpp	/^bool CmdStartTmr::handle(string& cli, SplitVector& split)$/;"	f	class:CmdStartTmr
+handle	Cli.cpp	/^bool CmdStop::handle(string& cli, SplitVector& split)$/;"	f	class:CmdStop
+help	Cli.cpp	/^void CmdCreateParty::help()$/;"	f	class:CmdCreateParty
+help	Cli.cpp	/^void CmdCreateUser::help()$/;"	f	class:CmdCreateUser
+help	Cli.cpp	/^void CmdLogin::help()$/;"	f	class:CmdLogin
+help	Cli.cpp	/^void CmdRequestJoin::help()$/;"	f	class:CmdRequestJoin
+help	Cli.cpp	/^void CmdSendEco::help()$/;"	f	class:CmdSendEco
+help	Cli.cpp	/^void CmdSendPkt::help()$/;"	f	class:CmdSendPkt
+help	Cli.cpp	/^void CmdStart::help()$/;"	f	class:CmdStart
+help	Cli.cpp	/^void CmdStartTmr::help()$/;"	f	class:CmdStartTmr
+help	Cli.cpp	/^void CmdStop::help()$/;"	f	class:CmdStop
+help	Cli.h	/^	string 		help;$/;"	m	struct:__anon1
+help	Cli.h	/^	void	help()$/;"	f	class:CommandFactory
+id	Client.h	/^	string&				id() { return m_id; }$/;"	f	class:Client
+m_bRun	Client.h	/^    bool                        m_bRun;$/;"	m	class:Client
+m_bTx	Client.h	/^    bool                        m_bTx;$/;"	m	class:Client
+m_id	Client.h	/^	string						m_id;$/;"	m	class:Client
+m_ios	Client.h	/^	boost::asio::io_service     m_ios;$/;"	m	class:Client
+m_monitorTmr	Client.h	/^	deadline_timer	            m_monitorTmr;		$/;"	m	class:Client
+m_partyId	Client.h	/^	uint32_t				m_partyId;$/;"	m	class:Client
+m_pid	Client.h	/^	int							m_pid;$/;"	m	class:Client
+m_rx	Client.h	/^    long                        m_rx;$/;"	m	class:Client
+m_seq	Client.h	/^	int							m_seq;$/;"	m	class:Client
+m_session	Client.h	/^	TcpSessionPtr				m_session;$/;"	m	class:Client
+m_signals	Client.h	/^	boost::asio::signal_set     m_signals;$/;"	m	class:Client
+m_table	Cli.h	/^	CommandMap m_table;$/;"	m	class:CommandFactory
+m_tx	Client.h	/^    long                        m_tx;$/;"	m	class:Client
+m_txTmr	Client.h	/^	deadline_timer	            m_txTmr;		$/;"	m	class:Client
+main	main.cpp	/^int main(int argc, char* argv[])$/;"	f
+read	Client.cpp	/^bool ClientHandler::read( uint32_t& msgId, int16_t& length, VoidPtr sess, VoidWeakPtr owner )$/;"	f	class:ClientHandler
+readLine	main.cpp	/^void readLine() $/;"	f
+registerCommand	Cli.h	/^	bool				registerCommand(const std::string& cmd)$/;"	f	class:CommandFactory
+sendMsg	Client.h	/^	void sendMsg(const string& str) $/;"	f	class:Client
+seq	Client.h	/^	int					seq(){ return m_seq; }$/;"	f	class:Client
+session	Client.h	/^	TcpSessionPtr		session(){ return m_session; }$/;"	f	class:Client
+sigHandler	main.cpp	/^static void sigHandler(int sig)$/;"	f	file:
+startMonitor	Client.h	/^	void startMonitor() $/;"	f	class:Client
+startRx	Client.h	/^	void startRx() $/;"	f	class:Client
+startRx	main.cpp	/^void startRx(ClientPtr client)$/;"	f
+startTmr	Client.h	/^	void startTmr() $/;"	f	class:Client
+startTx	Client.h	/^	void startTx( int& count ) $/;"	f	class:Client
+stop	Client.h	/^	void stop()$/;"	f	class:Client
+stopTx	Client.h	/^    void stopTx()$/;"	f	class:Client
+write	Client.h	/^	void write( Msg& msg)$/;"	f	class:Client
+~ClientHandler	Client.h	/^	virtual ~ClientHandler(){}$/;"	f	class:ClientHandler
+~CmdCreateParty	Cli.h	/^	virtual ~CmdCreateParty(){};$/;"	f	class:CmdCreateParty
+~CmdCreateUser	Cli.h	/^	virtual ~CmdCreateUser(){};$/;"	f	class:CmdCreateUser
+~CmdLogin	Cli.h	/^	virtual ~CmdLogin(){};$/;"	f	class:CmdLogin
+~CmdRequestJoin	Cli.h	/^	virtual ~CmdRequestJoin(){};$/;"	f	class:CmdRequestJoin
+~CmdSendEco	Cli.h	/^	virtual ~CmdSendEco(){};$/;"	f	class:CmdSendEco
+~CmdSendPkt	Cli.h	/^	virtual ~CmdSendPkt(){};$/;"	f	class:CmdSendPkt
+~CmdStart	Cli.h	/^	virtual ~CmdStart(){};$/;"	f	class:CmdStart
+~CmdStartTmr	Cli.h	/^	virtual ~CmdStartTmr(){};$/;"	f	class:CmdStartTmr
+~CmdStop	Cli.h	/^	virtual ~CmdStop(){};$/;"	f	class:CmdStop
