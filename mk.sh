@@ -14,3 +14,5 @@ cd ../server
 make clean
 make -j3
 make install
+
+test
