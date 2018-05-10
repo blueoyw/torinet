@@ -1,0 +1,5 @@
+Date                  Desription             Author
+------------------------------------------------------
+2018.05.08       Add boost Log
+                 Use std::function
+				 
