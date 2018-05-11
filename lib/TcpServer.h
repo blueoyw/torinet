@@ -1,55 +1,52 @@
-#ifndef _TCP_SERVER_H_
-#define _TCP_SERVER_H_
+#pragma once
 #include "Incl.h"
-#include "IoServicePool.h"
+//#include "IoServicePool.h"
+//#include "ISession.h"
+#include "IServer.h"
 #include "TcpSession.h"
-
-using boost::asio::ip::tcp;
-using boost::asio::deadline_timer;
-using namespace std;
-
-typedef std::set<TcpSessionPtr> TcpSessionSet;
-typedef std::set<TcpSessionPtr>::iterator TcpSessionItor;
+#include <mutex>
+#include <map>
+#include <deque>
 
 class TcpServer
-:public boost::enable_shared_from_this<TcpServer>
+:public IServer, public std::enable_shared_from_this<TcpServer>
 {
 public:
-	TcpServer(boost::asio::io_service& ios,
-			const tcp::endpoint& endpoint, size_t numThreads,
-			//SessionHandler* handler
-			SessionHandlerPtr handler
-			)
-		: m_ios(ios),
-		m_acceptor(ios, endpoint), m_tmr(ios),
-		m_handler(handler),
-		m_numThreads(numThreads), m_ioMode(SINGLE_ASIO), m_rx(0), m_tx(0)
-        ,m_prevRx(0), m_prevTx(0)
+	using tcp = boost::asio::ip::tcp;
 
+	TcpServer( size_t numThreads, IoMode mode );
+
+	TcpServer(const TcpServer&) = delete;
+	TcpServer& operator=(const TcpServer&) = delete;
+
+	virtual void start(uint16_t port) override ;
+	virtual void start(std::string ip, uint16_t port) override ;
+	virtual void stop() override ;
+
+	virtual State getState() override { return _state; }
+	virtual Ptr<IoServicePool> getIoServicePool() override {return _iosPool; }
+
+	virtual Ptr<ISession> getSession( long id ) override ;
+	
+	virtual void registerConnectHandler( ConnectHandler handler )
 	{
-		// problem for shared_from_this in constructor
-		// handle_signal();
-		//startAccept();
-		//startTmr();
+		_connectHandler = handler;
 	}
 
-	TcpServer(
-			const tcp::endpoint& endpoint, size_t numThreads,
-			SessionHandlerPtr handler, IoServicePoolPtr iosPool
-			)
-		: m_ios(iosPool->getIoService()),
-		m_acceptor(m_ios, endpoint), m_tmr(m_ios),
-		m_handler(handler),
-		m_numThreads(numThreads), m_ioMode(MULTI_ASIO), m_pIosPool(iosPool)
-        , m_rx(0), m_tx(0)
-        ,m_prevRx(0), m_prevTx(0)
+	virtual void registerReadHandler( ReadHandler handler )
 	{
-		// problem for shared_from_this in constructor
-		// handle_signal();
-		//startAccept();
-		//startTmr();
+		_readHandler = handler;
 	}
 
+	virtual void registerErrorHandler( ErrorHandler handler )
+	{
+		_errorHandler = handler;
+	}
+
+	void listen( tcp::endpoint endpoint );
+	void startAccept();
+
+	/*
 	boost::shared_ptr< TcpServer > thisObj(){ return shared_from_this(); }
 
 	void handleStop()
@@ -62,7 +59,7 @@ public:
 	{
 		LOG(L_INF, "[%s] mode[%d]", __func__, m_ioMode);
 		TcpSessionPtr session;
-		if ( m_ioMode == MULTI_ASIO ) {
+		if ( m_ioMode == MULTI ) {
             //load balancing rule : round robin
 			session.reset( new TcpSession( m_pIosPool->getIoService(), m_ioMode, m_handler ));
 		} else {
@@ -106,27 +103,33 @@ public:
     uint64_t prevTx() { return m_prevTx;}
     void addRx( uint64_t rx ) { m_rx += rx ;}
     void addTx( uint64_t tx ) { m_tx += tx ;}
+	*/
 
 private:
-	boost::asio::io_service& 	m_ios;
-	tcp::acceptor 					m_acceptor;
-	TcpSessionSet					m_sessions;
-	deadline_timer					m_tmr;
-	bool								m_isDaemon;
-	SessionHandlerPtr				m_handler;;
-	size_t 							m_numThreads;
-	IoMode 							m_ioMode;
-	IoServicePoolPtr				m_pIosPool;
+	using strand = boost::asio::io_service::strand;
 
+	ConnectHandler _connectHandler;
+	ReadHandler _readHandler;
+	ErrorHandler _errorHandler;
+
+	State _state;
+	Ptr<IoServicePool> _iosPool;
+
+	std::mutex _mutex;
+	std::deque<long>	_freeSessionId;
+	std::map<long, Ptr<TcpSession>> _sessions;
+
+	std::unique_ptr<strand> _strand;
+	std::unique_ptr<tcp::acceptor> _acceptor;
+	std::unique_ptr<tcp::socket> _socket;
+
+	int 		_numThreads;
+	IoMode 		_mode;
+
+	/*
     uint64_t m_rx;
     uint64_t m_tx;
     uint64_t m_prevRx;
     uint64_t m_prevTx;
+	*/
 };
-
-typedef boost::shared_ptr<TcpServer> TcpServerPtr;
-typedef boost::weak_ptr<TcpServer> TcpServerWeakPtr;
-
-
-#endif	
-

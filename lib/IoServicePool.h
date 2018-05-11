@@ -1,30 +1,31 @@
-#ifndef _IO_SERVICE_POOL_
-#define _IO_SERVICE_POOL_
+#pragma once
 #include "Incl.h"
-
-typedef boost::shared_ptr<boost::asio::io_service> IosPtr;
-typedef boost::shared_ptr<boost::asio::io_service::work> WorkPtr;
+#include <thread>
+#include <vector>
 
 class IoServicePool
 	: private boost::noncopyable
 {
 public:
-	//enum { MAX_POOL = 32 };
-	explicit IoServicePool(size_t size);
-	//IoServicePool(size_t size);
+	enum { MAX_POOL = 16 };
+
+	IoServicePool( const IoServicePool&) =delete;
+	IoServicePool& operator=( const IoServicePool&) =delete;
+
+	explicit IoServicePool(size_t size, IoMode& mode );
+	~IoServicePool();
 
 	boost::asio::io_service& getIoService();
 
 	void run();
 
 	void stop();
+	void wait();
 
 private:
-	std::vector<IosPtr>				m_ios;
-	std::vector<WorkPtr>				m_work;
-	size_t								m_next;
+	std::vector<UniquePtr<asio::io_service>> _ios;
+	std::vector<UniquePtr<asio::io_service::work>>	_work;
+	std::vector< std::thread > _threads;
+	size_t								_next;
+	IoMode 	_mode;
 };
-
-typedef boost::shared_ptr<IoServicePool> IoServicePoolPtr;
-
-#endif

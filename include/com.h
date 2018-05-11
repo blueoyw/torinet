@@ -8,6 +8,7 @@
 #ifndef _com_h_
 #define _com_h_
 
+#if 0
 typedef char				wc8;
 typedef unsigned char		wuc8;
 typedef short				wi16;
@@ -32,8 +33,6 @@ typedef boost::gregorian::days 		DAYS;
 typedef boost::asio::ip::address       address;
 typedef boost::asio::ip::tcp::endpoint ep;
 
-typedef boost::shared_ptr<void>  VoidPtr;
-
 #define KILO 1000UL
 #define MEGA (KILO * KILO)
 #define GIGA (MEGA * KILO)
@@ -49,8 +48,10 @@ inline wc8* get_home()
 	return home;
 }
 
-
-
+//////////////////////////////////////////////////////
+// Log
+//////////////////////////////////////////////////////
+/*
 #define L_TRC   5000
 #define L_DEB   10000
 #define L_INF   20000
@@ -72,16 +73,6 @@ extern log4cxx::LoggerPtr logger;
 	} \
 }\
 
-/*
-#define LOG(lev, ...) \
-{ \
-   ;\
-}\
-*/
-
-//for turn off LOG
-//#define LOG( lev, ... ) 
-
 #define lfunc            __func__
 #define SLOG            LOG(L_TRC, "[%s] start", lfunc)
 #define ELOG            LOG(L_TRC, "[%s] end", lfunc)
@@ -97,6 +88,7 @@ inline void initLog4cxx(wc8* p_exe)
 
     ELOG;
 }
+*/
 
 inline wui64 swap64(wui64 a)
 {
@@ -591,6 +583,7 @@ struct wui64_hash {
 		return seed;
 	}
 };
+#endif
 
 
 

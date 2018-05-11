@@ -1,48 +1,74 @@
 #include "IoServicePool.h"
 
-IoServicePool::IoServicePool(size_t size):m_next(0)
+IoServicePool::IoServicePool(size_t size, IoMode& mode ):_next(0),_mode(mode)
 {
-	for( size_t i=0; i<size; i++) {
-		IosPtr 	ios(new boost::asio::io_service );
-		WorkPtr 				work(new boost::asio::io_service::work(*ios) );
-		LOG(L_INF,"[%s] idx[%u] %p", __func__, i, ios.get() );
+	if( mode == MULTI ) {
+		for( size_t i=0; i<size; i++) {
+			std::unique_ptr<asio::io_service> ios(new asio::io_service );
+			std::unique_ptr<asio::io_service::work>	work(new asio::io_service::work(*ios) );
 
-		m_ios.push_back(ios);
-		m_work.push_back(work);
+			_ios.emplace_back(std::move(ios));
+			_work.emplace_back(std::move(work));
+		}
+	}
+	else {
+		UniquePtr<asio::io_service> ios( new asio::io_service);
+		UniquePtr<asio::io_service::work> work(new asio::io_service::work(*ios) );
+		_work.emplace_back( std::move(work) );
+		_ios.emplace_back( std::move(ios) );
 	}
 }
 
-//io_service& IoServicePool::getIoService( IoServicePoolPtr& ios )
-boost::asio::io_service& IoServicePool::getIoService( )
+IoServicePool::~IoServicePool()
+{
+	stop();
+	wait();
+}
+
+asio::io_service& IoServicePool::getIoService( )
 {
 	//round robin
-	if( m_next >= m_ios.size() ) 
-		m_next = 0;
+	if( _next >= _ios.size() ) 
+		_next = 0;
 
-	LOG(L_DEB,"[%s] idx[%u]", __func__, m_next);
-	boost::asio::io_service& ios = *m_ios[m_next++];
-	return ios;
+	return *_ios[_next++];
 }
 
 void IoServicePool::run()
 {
-	LOG(L_INF,"[%s] pool num[%ld] ", __func__, m_ios.size() );
-	std::vector<boost::shared_ptr<boost::thread> > threads;
-	for( size_t i=0; i<m_ios.size(); i++) {
-		boost::shared_ptr<boost::thread> thread( new boost::thread(
-			boost::bind( &boost::asio::io_service::run, m_ios[i] ) ));
-		threads.push_back( thread );
-	}
+	for( size_t i=0; i<_ios.size(); i++) {
+		//Ptr<std::thread> thread( new std::thread(
+			//boost::bind( &boost::asio::io_service::run, m_ios[i] ) ));
+		std::thread thread = std::thread( [this, ios=_ios[i].get()]()
+					{
+						try
+						{
+							ios->run();
+						}
+						catch( const std::exception& e ) 
+						{
+							std::cout<<"io service exception="<< e.what();
+						}
 
-	for( size_t i=0; i<m_ios.size(); i++) {
-		threads[i]->join();
+					} ) ;
+		_threads.emplace_back( std::move(thread ) );
+
+	}
+}
+
+
+void IoServicePool::wait()
+{
+	for( auto& thread : _threads) {
+		if( thread.joinable() ) 
+			thread.join();
 	}
 }
 
 void IoServicePool::stop()
 {
-	for( size_t i=0; i<m_ios.size(); i++) {
-		m_ios[i]->stop();
+	//for( size_t i=0; i<_ios.size(); i++) {
+	for( auto& ios : _ios ) {
+		ios->stop();
 	}
 }
-

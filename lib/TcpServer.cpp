@@ -1,5 +1,40 @@
 #include "TcpServer.h"
+TcpServer::TcpServer( size_t numThreads, IoMode mode )
+		:_numThreads(numThreads), _mode(mode)
+{
+	_iosPool = std::make_shared<IoServicePool>( _numThreads, _mode );
+}
 
+void TcpServer::start(uint16_t port)
+{
+
+}
+
+void TcpServer::start(std::string ip, uint16_t port)
+{
+
+}
+
+void TcpServer::stop()
+{
+
+}
+
+Ptr<ISession> TcpServer::getSession( long id )
+{
+
+}
+
+void TcpServer::listen( tcp::endpoint endpoint )
+{
+}
+
+void TcpServer::startAccept()
+{
+
+}
+
+/*
 void TcpServer::cbTmr()
 {
 	LOG(L_FAT, "[%s] ############ sessions = %ld ###########", lfunc, m_sessions.size() );
@@ -43,4 +78,4 @@ void TcpServer::deleteSession( const TcpSessionPtr& sess )
 	m_sessions.erase( sess );
 	LOG(L_DEB, "[%s] use_count[%d]", __func__, sess.use_count() );
 }
-
+*/

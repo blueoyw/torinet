@@ -8,7 +8,6 @@
 #include "Incl.h"
 #include "MsgId.h"
 
-using namespace std;
 const int SERVER_TCP_PORT 	  = 40000;
 const int CLIENT_TCP_PORT 	  = 40001;
 
