@@ -1,7 +1,7 @@
 CC = g++
 
 OPT =
-CFLAGS = -O2
+CFLAGS = -std=c++0x -O2
 #LDFLAGS = -L/usr/local/lib 
 LDFLAGS =
 #LIBS = -lpfring -ldag -lpcap -lrt
