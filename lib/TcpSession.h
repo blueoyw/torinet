@@ -17,7 +17,7 @@ public:
 
 	TcpSession(const TcpSession&) = delete;
 	TcpSession& operator=(const TcpSession&) = delete;
-	TcpSession( UniquePtr(tcp::socket) socket, int id );
+	TcpSession( UniquePtr(tcp::socket) socket, int id, IoMode& ioMode );
 
 	virtual ~TcpSession();
 
@@ -34,31 +34,12 @@ public:
 	virtual void close() ;
 	virtual bool isOpen() const ;
 
-	virtual asio::strand& getStrand() 
+	virtual asio::strand getStrand() 
 	{
-		return *_strand;
+		return _strand;
 	}
 
 #if 0
-	//for client
-	TcpSession(boost::asio::io_service& ios, const tcp::endpoint& epRemote,
-			SessionHandlerPtr handler )
-		: m_socket(ios), m_msgTmr(ios), m_epRemote(epRemote),
-		  m_handler(handler),
-		  m_ioMode(SINGLE_ASIO), m_strand(ios), m_tx(0), m_rx(0)
-	{
-
-	}
-
-	//for server
-	TcpSession(boost::asio::io_service& ios, const IoMode& ioMode, SessionHandlerPtr handler)
-		: m_socket(ios), m_msgTmr(ios), 
-		m_handler(handler),
-		m_ioMode(ioMode), m_strand(ios), m_tx(0), m_rx(0)
-	{
-
-	}
-
 	tcp::socket& socket()
 	{
 		return m_socket;
@@ -137,15 +118,16 @@ private:
 
 	int 	_id;
 	UniquePtr(tcp::socket) 	_socket;			
-	UniquePtr(boost::asio::io_service::strand) _strand;
+	tcp::endpoint  			_remoteEndpoint;
+	boost::asio::io_service::strand _strand;
 	State 		_state;
 	IoMode 				_ioMode;
 
 	Msg 				m_msg;
 	Msg 				m_sendMsg;
-    MessageQueue        _sendQue;
-    uint64_t                _tx;
-    uint64_t                _rx;
+    deque<Msg>        	_sendQue;
+    //uint64_t                _tx;
+    //uint64_t                _rx;
 
 };
 

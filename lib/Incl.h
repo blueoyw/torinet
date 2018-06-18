@@ -1,5 +1,4 @@
-#ifndef _NETWORK_INCL_H_
-#define _NETWORK_INCL_H_
+#pragma once
 
 #include <algorithm>
 #include <stdlib.h>
@@ -31,12 +30,33 @@
 #include "../include/com.h"
 #include "../include/Msg.h"
 
-typedef boost::shared_ptr<void>	VoidPtr;
-typedef boost::weak_ptr<void> 	VoidWeakPtr;
+namespace tori {
+	/*
+	template<typename T>
+	using Ptr = std::shared_ptr<T>;
 
-typedef enum {
-	SINGLE_ASIO=0,
-	MULTI_ASIO
-} IoMode;
+	template<typename T>
+	using WeakPtr = std::weak_ptr<T>;
 
-#endif
+	template<typename T>
+	using UniquePtr = std::unique_ptr<T>;
+	*/
+#define Ptr( T ) \
+	std::shared_ptr<T>
+
+#define WeakPtr( T ) \
+	std::weak_ptr<T>
+
+#define UniquePtr( T ) \
+	std::unique_ptr<T>
+
+	namespace asio = boost::asio;
+
+	typedef boost::shared_ptr<void>	VoidPtr;
+	typedef boost::weak_ptr<void> 	VoidWeakPtr;
+
+	typedef enum {
+		SINGLE_ASIO=0,
+		MULTI_ASIO
+	} IoMode;
+}

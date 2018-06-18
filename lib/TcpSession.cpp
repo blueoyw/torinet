@@ -1,14 +1,21 @@
 #include "TcpSession.h"
 namespace tori{
 namespace net{
-TcpSession::TcpSession( UniquePtr(tcp::socket) socket, int id )
+TcpSession::TcpSession( UniquePtr(tcp::socket) socket, int id, IoMode& ioMode )
+	: _socket( std::move(socket) )
+	  , _id ( id )
+	  , _state ( State::Ready )
+	  , _ioMode ( ioMode )
 {
+	UniquePtr( asio::io_service::strand ) p1( new asio::io_service::strand( _socket->get_io_service() );
+	_strand = move(p1 );
 
 }
 
 bool TcpSession::getRemoteEndpoint( string& ip, uint16_t& port ) const
 {
-
+	if ( _state == State::Closed )
+		return false;
 }
 
 void TcpSession::send( const uint8_t* data, size_t size )
