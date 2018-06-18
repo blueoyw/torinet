@@ -1,16 +1,45 @@
-#ifndef _TCP_SESSION_H_
-#define _TCP_SESSION_H_
+#pragma once
 #include "Incl.h"
-#include "IfSession.h"
+#include "Session.h"
+
+
+namespace tori{
+namespace net{
 
 using boost::asio::ip::tcp;
 using boost::asio::deadline_timer;
 using namespace std;
 
 class TcpSession
-:public boost::enable_shared_from_this<TcpSession>
+:public Session, public boost::enable_shared_from_this<TcpSession>
 {
 public:
+
+	TcpSession(const TcpSession&) = delete;
+	TcpSession& operator=(const TcpSession&) = delete;
+	TcpSession( UniquePtr(tcp::socket) socket, int id );
+
+	virtual ~TcpSession();
+
+	virtual int getID() const
+	{
+		return _id;
+	}
+
+	virtual bool getRemoteEndpoint( string& ip, uint16_t& port ) const ;
+	virtual void send( const uint8_t* data, size_t size ) ;
+	virtual void send ( const Msg& msg ) ;
+	virtual void send( Msg& msg ) ;
+	virtual void start() ;
+	virtual void close() ;
+	virtual bool isOpen() const ;
+
+	virtual asio::strand& getStrand() 
+	{
+		return *_strand;
+	}
+
+#if 0
 	//for client
 	TcpSession(boost::asio::io_service& ios, const tcp::endpoint& epRemote,
 			SessionHandlerPtr handler )
@@ -96,8 +125,30 @@ private:
     MessageQueue        m_sendQue;
     uint64_t                m_tx;
     uint64_t                m_rx;
+#endif
+private:
+	enum State
+	{
+		Ready,
+		Opening,
+		Opened,
+		Closed
+	};
+
+	int 	_id;
+	UniquePtr(tcp::socket) 	_socket;			
+	UniquePtr(boost::asio::io_service::strand) _strand;
+	State 		_state;
+	IoMode 				_ioMode;
+
+	Msg 				m_msg;
+	Msg 				m_sendMsg;
+    MessageQueue        _sendQue;
+    uint64_t                _tx;
+    uint64_t                _rx;
+
 };
 
-typedef boost::shared_ptr<TcpSession> TcpSessionPtr;
-#endif		//_SESSION_H_
+}
+}
 

@@ -1,4 +1,47 @@
 #include "TcpSession.h"
+namespace tori{
+namespace net{
+TcpSession::TcpSession( UniquePtr(tcp::socket) socket, int id )
+{
+
+}
+
+bool TcpSession::getRemoteEndpoint( string& ip, uint16_t& port ) const
+{
+
+}
+
+void TcpSession::send( const uint8_t* data, size_t size )
+{
+
+}
+
+void TcpSession::send ( const Msg& msg )
+{
+
+}
+
+void TcpSession::send( Msg& msg )
+{
+
+}
+
+void TcpSession::start()
+{
+
+}
+
+void TcpSession::close()
+{
+
+}
+
+bool TcpSession::isOpen() const
+{
+
+}
+
+#if 0
 void TcpSession::start()
 {
 	//for reuse ip and port
@@ -225,5 +268,10 @@ void TcpSession::handleWrite(const boost::system::error_code& error)
         m_handler->error( error, shared_from_this(), m_owner );
     }
 }
+#endif
+
+}
+}
+
 
 
