@@ -1,7 +1,7 @@
 CC = g++
 
 OPT =
-CFLAGS = -O2
+CFLAGS = -std=c++0x -O2
 #LDFLAGS = -L/usr/local/lib 
 LDFLAGS =
 #LIBS = -lpfring -ldag -lpcap -lrt
@@ -14,7 +14,8 @@ TARGET = torinet
 LIB_A = lib$(TARGET).a
 
 OBJS = $(SRCS:.cpp=.o)
-SRCS = TcpSession.cpp UdpSession.cpp IpcSession.cpp TcpServer.cpp IoServicePool.cpp
+#SRCS = TcpSession.cpp UdpSession.cpp IpcSession.cpp TcpServer.cpp IoServicePool.cpp
+SRCS = TcpSession.cpp
 
 all: $(LIB_A)
 $(LIB_A) : $(OBJS)

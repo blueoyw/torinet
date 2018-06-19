@@ -6,8 +6,8 @@
 namespace tori{
 namespace net{
 
-using boost::asio::ip::tcp;
-using boost::asio::deadline_timer;
+using tcp = boost::asio::ip::tcp;
+using deadline_timer = boost::asio::deadline_timer;
 using namespace std;
 
 class TcpSession
@@ -17,7 +17,7 @@ public:
 
 	TcpSession(const TcpSession&) = delete;
 	TcpSession& operator=(const TcpSession&) = delete;
-	TcpSession( UniquePtr(tcp::socket) socket, int id, IoMode& ioMode );
+	TcpSession( asio::io_service& ios, UniquePtr<tcp::socket> socket, int id, ServerConfig& config );
 
 	virtual ~TcpSession();
 
@@ -33,13 +33,15 @@ public:
 	virtual void start() ;
 	virtual void close() ;
 	virtual bool isOpen() const ;
+	void 	handleWrite(const error_code& error);
 
-	virtual asio::strand getStrand() 
-	{
-		return _strand;
-	}
 
 #if 0
+	asio::strand getStrand() 
+	{
+		return *_strand;
+	}
+
 	tcp::socket& socket()
 	{
 		return m_socket;
@@ -63,7 +65,6 @@ public:
 	void 	handleConnect(const boost::system::error_code& error);
 	void 	handleReadHeader(const boost::system::error_code& error);
 	void 	handleReadBody(uint32_t& msgId, int16_t& length, const boost::system::error_code& error);
-	void 	handleWrite(const boost::system::error_code& error);
 
 	//void broadcast(const Msg& str);
 
@@ -116,18 +117,18 @@ private:
 		Closed
 	};
 
+	UniquePtr<tcp::socket> 	_socket;			
 	int 	_id;
-	UniquePtr(tcp::socket) 	_socket;			
-	tcp::endpoint  			_remoteEndpoint;
-	boost::asio::io_service::strand _strand;
 	State 		_state;
+	tcp::endpoint  			_remoteEndpoint;
+	//asio::io_service::strand _strand;
 	IoMode 				_ioMode;
 
-	Msg 				m_msg;
-	Msg 				m_sendMsg;
+	Msg 				_msg;
+	Msg 				_sendMsg;
     deque<Msg>        	_sendQue;
-    //uint64_t                _tx;
-    //uint64_t                _rx;
+    uint64_t                _tx;
+    uint64_t                _rx;
 
 };
 

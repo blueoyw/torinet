@@ -27,7 +27,7 @@ public:
 	virtual void send( Msg& msg ) = 0;
 	virtual void close() = 0;
 	virtual bool isOpen() const = 0;
-	virtual asio::strand& getStrand() = 0;
+	//virtual asio::strand& getStrand() const = 0;
 
 protected:
 	Session() {};

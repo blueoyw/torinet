@@ -1,36 +1,93 @@
 #include "TcpSession.h"
 namespace tori{
 namespace net{
-TcpSession::TcpSession( UniquePtr(tcp::socket) socket, int id, IoMode& ioMode )
-	: _socket( std::move(socket) )
+TcpSession::TcpSession( asio::io_service& ios, UniquePtr<tcp::socket> socket, int id, ServerConfig& config )
+	: _socket( move(socket) )
 	  , _id ( id )
 	  , _state ( State::Ready )
-	  , _ioMode ( ioMode )
 {
-	UniquePtr( asio::io_service::strand ) p1( new asio::io_service::strand( _socket->get_io_service() );
-	_strand = move(p1 );
-
+	//_strand(ios);
+	//for reuse ip and port
+	_socket->set_option(asio::socket_base::reuse_address(true));
+	//for sending packet no delay
+	_socket->set_option(tcp::no_delay( config._noDelay ));
 }
 
 bool TcpSession::getRemoteEndpoint( string& ip, uint16_t& port ) const
 {
 	if ( _state == State::Closed )
 		return false;
+	ip = _remoteEndpoint.address().to_string();
+	port = _remoteEndpoint.port();
+	return true;
 }
 
 void TcpSession::send( const uint8_t* data, size_t size )
 {
-
+	//TO DO
 }
 
 void TcpSession::send ( const Msg& msg )
 {
+    bool progress = !_sendQue.empty();
+    _sendQue.push_back(msg);
+    _sendMsg = msg;
+    if( !progress ) 
+    {
+		boost::asio::async_write( *_socket,
+				asio::buffer( &_sendQue.front(), _sendQue.front().length()),
+				[this, self = shared_from_this()] ( error_code const& ec, std::size_t ) 
+				{
+					handleWrite(ec);
+				});
+
+		return;
+		/*
+        boost::asio::async_write(m_socket,
+                boost::asio::buffer( &m_sendQue.front(), m_sendQue.front().length()),
+                _strand.wrap(
+                    boost::bind(&TcpSession::handleWrite, shared_from_this(),
+                        boost::asio::placeholders::error) ) );
+		*/
+    }
 
 }
 
 void TcpSession::send( Msg& msg )
 {
+	//TO DO
 
+}
+
+void TcpSession::handleWrite(const error_code& error)
+{
+    if (!error) 
+    {
+        _tx += _sendQue.front().length();
+        //LOG(L_TRC, "ywoh test[%s] add tx byte[%lu] total[%lu]", lfunc, m_sendQue.front().length(), m_tx );
+        _sendQue.pop_front();
+        if( !_sendQue.empty() ) 
+        {
+			boost::asio::async_write( *_socket,
+					asio::buffer( &_sendQue.front(), _sendQue.front().length()),
+					[this, self = shared_from_this()] ( error_code const& ec, std::size_t ) 
+					{
+						handleWrite(ec);
+					});
+			/*
+            boost::asio::async_write(m_socket,
+                    boost::asio::buffer( &m_sendQue.front(), m_sendQue.front().length()),
+                    m_strand.wrap(
+                        boost::bind(&TcpSession::handleWrite, shared_from_this(),
+                            boost::asio::placeholders::error) ) );
+			*/
+        }
+
+    } 
+    else 
+    {
+        //m_handler->error( error, shared_from_this(), m_owner );
+    }
 }
 
 void TcpSession::start()
@@ -40,7 +97,12 @@ void TcpSession::start()
 
 void TcpSession::close()
 {
-
+	//m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+	_socket->close();
+	/*
+	LOG(L_DEB, "[%s] use_count[%d]", __func__
+				, shared_from_this().use_count() );
+	*/
 }
 
 bool TcpSession::isOpen() const
@@ -49,44 +111,8 @@ bool TcpSession::isOpen() const
 }
 
 #if 0
-void TcpSession::start()
-{
-	//for reuse ip and port
-	m_socket.set_option(boost::asio::socket_base::reuse_address(true));
-	//for sending packet no delay
-	m_socket.set_option(boost::asio::ip::tcp::no_delay(true));
-}
-
-void TcpSession::close()
-{
-	//m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
-	m_socket.close();
-	m_msgTmr.cancel();
-	LOG(L_DEB, "[%s] use_count[%d]", __func__
-				, shared_from_this().use_count() );
-}
-
 void TcpSession::asyncSend( Msg& msg )
 {
-    bool progress = !m_sendQue.empty();
-    m_sendQue.push_back(msg);
-    m_sendMsg = msg;
-    if( !progress ) 
-    {
-        if ( m_ioMode == MULTI_ASIO ) 
-        {
-            boost::asio::async_write(m_socket,
-                    boost::asio::buffer( &m_sendQue.front(), m_sendQue.front().length()),
-                    boost::bind(&TcpSession::handleWrite, shared_from_this(),
-                        boost::asio::placeholders::error) ) ;
-            return;
-        }
-        boost::asio::async_write(m_socket,
-                boost::asio::buffer( &m_sendQue.front(), m_sendQue.front().length()),
-                m_strand.wrap(
-                    boost::bind(&TcpSession::handleWrite, shared_from_this(),
-                        boost::asio::placeholders::error) ) );
-    }
 }
 
 void TcpSession::asyncSend()
@@ -233,48 +259,6 @@ void TcpSession::handleReadBody(uint32_t& msgId, int16_t& length, const boost::s
 	}
 }
 
-#if 0
-void TcpSession::process_msg(uint32_t& msgId)
-{
-	LOG(L_DEB, "msgId[%x] %s", msgId, m_msg.body() );
-
-	bool	rtn = false;
-	
-	//ywoh to do
-	send_msg();
-}
-#endif
-
-void TcpSession::handleWrite(const boost::system::error_code& error)
-{
-    if (!error) 
-    {
-        m_tx += m_sendQue.front().length();
-        //LOG(L_TRC, "ywoh test[%s] add tx byte[%lu] total[%lu]", lfunc, m_sendQue.front().length(), m_tx );
-        m_sendQue.pop_front();
-        if( !m_sendQue.empty() ) 
-        {
-            if ( m_ioMode == MULTI_ASIO ) 
-            {
-                boost::asio::async_write(m_socket,
-                        boost::asio::buffer( &m_sendQue.front(), m_sendQue.front().length()),
-                        boost::bind(&TcpSession::handleWrite, shared_from_this(),
-                            boost::asio::placeholders::error) ) ;
-                return;
-            }
-            boost::asio::async_write(m_socket,
-                    boost::asio::buffer( &m_sendQue.front(), m_sendQue.front().length()),
-                    m_strand.wrap(
-                        boost::bind(&TcpSession::handleWrite, shared_from_this(),
-                            boost::asio::placeholders::error) ) );
-        }
-
-    } 
-    else 
-    {
-        m_handler->error( error, shared_from_this(), m_owner );
-    }
-}
 #endif
 
 }
