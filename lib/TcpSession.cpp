@@ -1,7 +1,7 @@
 #include "TcpSession.h"
 namespace tori{
 namespace net{
-TcpSession::TcpSession( asio::io_service& ios, UniquePtr<tcp::socket> socket, int id, ServerConfig& config )
+TcpSession::TcpSession( UniquePtr<tcp::socket> socket, int id, ServerConfig& config )
 	: _socket( move(socket) )
 	  , _id ( id )
 	  , _state ( State::Ready )
@@ -41,17 +41,18 @@ void TcpSession::start()
 
 void TcpSession::read( size_t size )
 {
-    boost::asio::async_read( _socket
-                            , boost::asio::buffer(_msg.head(), size )
+    //boost::asio::async_read( _socket
+    _socket->async_read_some(
+                             boost::asio::buffer(_msg.head(), size )
                             , [this, self=shared_from_this()]
-                            ( const error_code& ec ) 
+                            ( const error_code& ec, size_t  ) 
                             {
                                 handleReadHeader( ec );
                             }
                             ) ;
 }
 
-void TcpSession::handleReadHeader(const error_code& error )
+void TcpSession::handleReadHeader( const error_code& error )
 {
     if( error )
     {
@@ -80,10 +81,11 @@ void TcpSession::handleReadHeader(const error_code& error )
 
 			cpMsgHeader_t* hdr = _msg.head();
 
-            boost::asio::async_read( _socket
-                                    , boost::asio::buffer(_msg.body(), _msg.bodyLength() )
+            //boost::asio::async_read( _socket
+            _socket->async_read_some(
+                                    boost::asio::buffer(_msg.body(), _msg.bodyLength() )
                                     , [this, self=shared_from_this()]
-                                    ( uint32_t& msgId, int16_t& length, const error_code& ec ) 
+                                    (  const error_code& ec, std::size_t bytes ) 
                                     {
                                         cpMsgHeader_t* head = _msg.head();
                                         handleReadBody( head->msgId, head->bodyLength, ec );
@@ -93,7 +95,7 @@ void TcpSession::handleReadHeader(const error_code& error )
 	}
 }
 
-void 	TcpSession::handleReadBody( uint32_t& msgId, int16_t& length, const boost::system::error_code& ec)
+void 	TcpSession::handleReadBody( uint32_t& msgId, int16_t& length, const error_code& ec)
 {
     if( ec )
     {
@@ -119,7 +121,7 @@ void 	TcpSession::handleReadBody( uint32_t& msgId, int16_t& length, const boost:
 	}
 }
 
-void TcpSession::handleError(const error_code& ec )
+void TcpSession::handleError( const error_code& ec )
 {
     LOG(L_ERR, "%s", ec.message().c_str() );
 }
@@ -155,7 +157,7 @@ void TcpSession::send( Msg& msg )
     {
 		boost::asio::async_write( *_socket,
 				asio::buffer( &_sendQue.front(), _sendQue.front().length()),
-				[this, self = shared_from_this()] ( error_code const& ec, std::size_t ) 
+				[this, self = shared_from_this()] (  error_code const& ec, std::size_t ) 
 				{
 					handleWrite(ec);
 				});
@@ -164,14 +166,14 @@ void TcpSession::send( Msg& msg )
     }
 }
 
-void TcpSession::handleWrite(const error_code& error)
+void TcpSession::handleWrite( const error_code& ec)
 {
-    if( error )
+    if( ec )
     {
         CloseReason reason = CloseReason::ActiveClose;
-        if ( error == asio::error::eof || error == asio::error::operation_aborted )
+        if ( ec == asio::error::eof || ec == asio::error::operation_aborted )
             reason = CloseReason::Disconnected;
-        handleError( error );
+        handleError( ec );
         _closedHandler( shared_from_this(), reason);
         return;
     }
@@ -184,7 +186,7 @@ void TcpSession::handleWrite(const error_code& error)
         {
 			boost::asio::async_write( *_socket,
 					asio::buffer( &_sendQue.front(), _sendQue.front().length()),
-					[this, self = shared_from_this()] ( error_code const& ec, std::size_t ) 
+					[this, self = shared_from_this()] ( const error_code& ec, std::size_t ) 
 					{
 						handleWrite(ec);
 					});
