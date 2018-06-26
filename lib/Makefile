@@ -15,7 +15,7 @@ LIB_A = lib$(TARGET).a
 
 OBJS = $(SRCS:.cpp=.o)
 #SRCS = TcpSession.cpp UdpSession.cpp IpcSession.cpp TcpServer.cpp IoServicePool.cpp
-SRCS = TcpSession.cpp
+SRCS = TcpSession.cpp IoServicePool.cpp TcpServer.cpp
 
 all: $(LIB_A)
 $(LIB_A) : $(OBJS)
