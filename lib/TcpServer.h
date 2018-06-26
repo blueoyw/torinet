@@ -1,20 +1,88 @@
-#ifndef _TCP_SERVER_H_
-#define _TCP_SERVER_H_
+#pragma once
 #include "Incl.h"
-#include "IoServicePool.h"
+#include "Server.h"
 #include "TcpSession.h"
+#include "IoServicePool.h"
 
-using boost::asio::ip::tcp;
-using boost::asio::deadline_timer;
+namespace tori{
+namespace net{
+
+using tcp = boost::asio::ip::tcp;
+using deadline_timer = boost::asio::deadline_timer;
 using namespace std;
 
-typedef std::set<TcpSessionPtr> TcpSessionSet;
-typedef std::set<TcpSessionPtr>::iterator TcpSessionItor;
-
 class TcpServer
-:public boost::enable_shared_from_this<TcpServer>
+:public Server, public std::enable_shared_from_this<TcpServer>
 {
 public:
+	using tcp = asio::ip::tcp;
+
+	TcpServer(const string name, const ServerConfig& config);
+	virtual ~TcpServer() {};
+
+	virtual void start(uint16_t port);
+	virtual void start(std::string address, uint16_t port);
+	virtual void stop();
+
+	State getState()
+	{
+		return _state;
+	}
+
+	Ptr<IoServicePool> getIoServicePool()
+	{
+		return _ioServiceLoop;
+	}
+
+	virtual Ptr<Session> getSession(int id)
+	{
+		std::lock_guard<std::mutex> lock_guard(_mutex);
+		auto it = _sessions.find( id );
+		return ( it != _sessions.end() ) ? it->second : NULL;
+	}
+
+
+	virtual void registerSessionOpenedHandler(const SessionOpenedHandler& handler)
+	{
+		_openedHandler = handler;
+	}
+
+	virtual void registerSessionClosedHandler(const SessionClosedHandler& handler)
+	{
+		_closedHandler = handler;
+	}
+
+	virtual void registerMessageHandler(const MessageHandler& handler)
+	{
+		_messageHandler = handler;
+	}
+protected:
+    TcpServer();
+
+private:
+    void listen(tcp::endpoint ep);
+	void startAccept();
+    void handleClose( const Ptr<TcpSession>& session, CloseReason reason );
+
+private:
+    string _name;
+    ServerConfig _config;
+	State _state;
+
+	Ptr<IoServicePool> _ioServiceLoop;
+	std::mutex _mutex;
+	map<int, Ptr<Session> > _sessions;
+    deque<int>  _free_session_id;
+
+	SessionOpenedHandler _openedHandler;
+	SessionClosedHandler _closedHandler;
+	MessageHandler _messageHandler;
+
+    UniquePtr<tcp::acceptor> _acceptor;
+    UniquePtr<tcp::socket> _socket;
+
+
+#if 0
 	TcpServer(boost::asio::io_service& ios,
 			const tcp::endpoint& endpoint, size_t numThreads,
 			//SessionHandler* handler
@@ -58,21 +126,6 @@ public:
 		m_sessions.clear();
 	}
 
-	void startAccept()
-	{
-		LOG(L_INF, "[%s] mode[%d]", __func__, m_ioMode);
-		TcpSessionPtr session;
-		if ( m_ioMode == MULTI_ASIO ) {
-            //load balancing rule : round robin
-			session.reset( new TcpSession( m_pIosPool->getIoService(), m_ioMode, m_handler ));
-		} else {
-			session.reset( new TcpSession( m_ios, m_ioMode, m_handler ));
-		}
-
-		m_acceptor.async_accept(session->socket(),
-				boost::bind(&TcpServer::handleAccept, shared_from_this(), session,
-					boost::asio::placeholders::error));
-	}
 
 	void handleAccept(TcpSessionPtr session,
 			const boost::system::error_code& error)
@@ -122,11 +175,9 @@ private:
     uint64_t m_tx;
     uint64_t m_prevRx;
     uint64_t m_prevTx;
+#endif
 };
 
-typedef boost::shared_ptr<TcpServer> TcpServerPtr;
-typedef boost::weak_ptr<TcpServer> TcpServerWeakPtr;
-
-
-#endif	
+}
+}
 

@@ -9,6 +9,8 @@
 #include <list>
 #include <set>
 #include <vector>
+//#include <thread>
+#include <memory>
 
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
@@ -52,4 +54,5 @@ namespace tori {
 		SINGLE_ASIO=0,
 		MULTI_ASIO
 	} IoMode;
+
 }

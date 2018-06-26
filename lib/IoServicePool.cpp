@@ -1,5 +1,8 @@
 #include "IoServicePool.h"
 
+namespace tori {
+namespace net {
+
 IoServicePool::IoServicePool(size_t size):m_next(0)
 {
 	for( size_t i=0; i<size; i++) {
@@ -46,3 +49,5 @@ void IoServicePool::stop()
 	}
 }
 
+}
+}
