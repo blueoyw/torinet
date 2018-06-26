@@ -9,6 +9,8 @@
 #include <list>
 #include <set>
 #include <vector>
+//#include <thread>
+#include <memory>
 
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
@@ -30,8 +32,9 @@
 #include "../include/com.h"
 #include "../include/Msg.h"
 
+#include "Config.h"
+
 namespace tori {
-	/*
 	template<typename T>
 	using Ptr = std::shared_ptr<T>;
 
@@ -40,17 +43,9 @@ namespace tori {
 
 	template<typename T>
 	using UniquePtr = std::unique_ptr<T>;
-	*/
-#define Ptr( T ) \
-	std::shared_ptr<T>
-
-#define WeakPtr( T ) \
-	std::weak_ptr<T>
-
-#define UniquePtr( T ) \
-	std::unique_ptr<T>
 
 	namespace asio = boost::asio;
+	using boost::system::error_code;
 
 	typedef boost::shared_ptr<void>	VoidPtr;
 	typedef boost::weak_ptr<void> 	VoidWeakPtr;
@@ -59,4 +54,5 @@ namespace tori {
 		SINGLE_ASIO=0,
 		MULTI_ASIO
 	} IoMode;
+
 }

@@ -6,18 +6,18 @@
 namespace tori{
 namespace net{
 
-using boost::asio::ip::tcp;
-using boost::asio::deadline_timer;
+using tcp = boost::asio::ip::tcp;
+using deadline_timer = boost::asio::deadline_timer;
 using namespace std;
 
 class TcpSession
-:public Session, public boost::enable_shared_from_this<TcpSession>
+:public Session, public std::enable_shared_from_this<TcpSession>
 {
 public:
 
 	TcpSession(const TcpSession&) = delete;
 	TcpSession& operator=(const TcpSession&) = delete;
-	TcpSession( UniquePtr(tcp::socket) socket, int id, IoMode& ioMode );
+	TcpSession( asio::io_service& ios, UniquePtr<tcp::socket> socket, int id, ServerConfig& config );
 
 	virtual ~TcpSession();
 
@@ -30,16 +30,22 @@ public:
 	virtual void send( const uint8_t* data, size_t size ) ;
 	virtual void send ( const Msg& msg ) ;
 	virtual void send( Msg& msg ) ;
+	virtual void read( size_t size ) ;
 	virtual void start() ;
 	virtual void close() ;
 	virtual bool isOpen() const ;
 
-	virtual asio::strand getStrand() 
-	{
-		return _strand;
-	}
+    std::function<void(const Ptr<TcpSession>&)> _openedHandler;
+    std::function<void(const Ptr<TcpSession>&, const CloseReason&)>  _closedHandler;
+    std::function<void(const Ptr<TcpSession>&, const uint8_t*, size_t)> _messageHandler;
+
 
 #if 0
+	asio::strand getStrand() 
+	{
+		return *_strand;
+	}
+
 	tcp::socket& socket()
 	{
 		return m_socket;
@@ -63,7 +69,6 @@ public:
 	void 	handleConnect(const boost::system::error_code& error);
 	void 	handleReadHeader(const boost::system::error_code& error);
 	void 	handleReadBody(uint32_t& msgId, int16_t& length, const boost::system::error_code& error);
-	void 	handleWrite(const boost::system::error_code& error);
 
 	//void broadcast(const Msg& str);
 
@@ -108,6 +113,11 @@ private:
     uint64_t                m_rx;
 #endif
 private:
+	void 	handleWrite(const error_code& error);
+	void 	handleReadHeader(const error_code& ec );
+	void 	handleReadBody( uint32_t& msgId, int16_t& length, const boost::system::error_code& ec);
+	void 	handleError(const error_code& ec);
+private:
 	enum State
 	{
 		Ready,
@@ -116,18 +126,21 @@ private:
 		Closed
 	};
 
+	UniquePtr<tcp::socket> 	_socket;			
 	int 	_id;
-	UniquePtr(tcp::socket) 	_socket;			
-	tcp::endpoint  			_remoteEndpoint;
-	boost::asio::io_service::strand _strand;
 	State 		_state;
+	tcp::endpoint  			_remoteEndpoint;
+	//asio::io_service::strand _strand;
 	IoMode 				_ioMode;
 
-	Msg 				m_msg;
-	Msg 				m_sendMsg;
+	Msg 				_msg;
     deque<Msg>        	_sendQue;
-    //uint64_t                _tx;
-    //uint64_t                _rx;
+
+	size_t _minReceive;
+	size_t _maxReceiveBufferSize;
+
+    uint64_t                _tx;
+    uint64_t                _rx;
 
 };
 

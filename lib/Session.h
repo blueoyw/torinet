@@ -10,7 +10,6 @@ enum CloseReason {
 	Disconnected,
 	Timeout
 };
-
 class Session
 {
 public:
@@ -24,14 +23,25 @@ public:
 	virtual void start() = 0 ;
 	virtual void send( const uint8_t* data, size_t size ) = 0;
 	virtual void send ( const Msg& msg ) = 0;
+	virtual void read( size_t size ) = 0;
 	virtual void send( Msg& msg ) = 0;
 	virtual void close() = 0;
 	virtual bool isOpen() const = 0;
-	virtual asio::strand& getStrand() = 0;
+	//virtual asio::strand& getStrand() const = 0;
 
 protected:
 	Session() {};
 };
+
+// Handler to be notified on session creation.
+using SessionOpenedHandler = function<void(const Ptr<Session>&)>;
+
+// Handler to be notified on session close. This one ignores the close reason.
+using SessionClosedHandler = function<void(const Ptr<Session >&, const CloseReason&)>;
+
+// Receive handler type.
+using MessageHandler = function<void(const Ptr<Session>&, const uint8_t*, size_t)>;
+
 
 }
 }

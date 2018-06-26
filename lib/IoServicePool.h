@@ -1,16 +1,20 @@
-#ifndef _IO_SERVICE_POOL_
-#define _IO_SERVICE_POOL_
+#pragma once
 #include "Incl.h"
 
+namespace tori{
+namespace net {
 typedef boost::shared_ptr<boost::asio::io_service> IosPtr;
 typedef boost::shared_ptr<boost::asio::io_service::work> WorkPtr;
 
 class IoServicePool
-	: private boost::noncopyable
 {
 public:
 	//enum { MAX_POOL = 32 };
+	IoServicePool( const IoServicePool&) = delete;
+	IoServicePool& operator=( const IoServicePool&) = delete;
+
 	explicit IoServicePool(size_t size);
+	~IoServicePool();
 	//IoServicePool(size_t size);
 
 	boost::asio::io_service& getIoService();
@@ -27,4 +31,5 @@ private:
 
 typedef boost::shared_ptr<IoServicePool> IoServicePoolPtr;
 
-#endif
+}
+}
