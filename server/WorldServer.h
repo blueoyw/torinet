@@ -1,8 +1,9 @@
-#ifndef _SERVER_H_
-#define _SERVER_H_
-#include "Incl.h"
-#include "../lib/TcpSession.h"
+#pragma once
 
+#include "Incl.h"
+#include <map>
+
+/*
 // Msg process
 bool	createUser(  TcpSessionPtr& sess );
 bool	login(  TcpSessionPtr& sess );
@@ -21,24 +22,18 @@ public:
 	virtual bool   error( const boost::system::error_code& error, VoidPtr sess, VoidWeakPtr owner );
 	virtual bool   connect( VoidPtr sess, VoidWeakPtr owner );
 };
+*/
 
-typedef boost::shared_ptr<ServerHandler> ServerHandlerPtr;
+using namespace std;
 
-
-extern pid_t ppid;
-
-class Server {
+class WorldServer {
 public:
-	Server(boost::asio::io_service& ios)
-		:m_ios(ios), m_signals(ios), m_ioMode(SINGLE_ASIO)
+	WorldServer()
+		//: m_server(), m_ios(pool->getIoService()), m_signals(m_ios), m_pIoPool(pool)
 	{
-
-	}
-
-	Server(IoServicePoolPtr pool)
-		:m_ios(pool->getIoService()), m_signals(m_ios), m_pIoPool(pool), m_ioMode(MULTI_ASIO)
-	{
-
+        m_server.reset( new TcpServer( name, config) );
+        m_ios = m_server->getIoServicePool()->getIoService();
+        m_signals = m_ios;
 	}
 
 	void regSignal()
@@ -46,12 +41,14 @@ public:
 		m_signals.add(SIGINT);
 		m_signals.add(SIGTERM);
 		//m_signals.add(SIGSEGV);
-		m_signals.async_wait( boost::bind(&Server::stop, this,
+		m_signals.async_wait( boost::bind(&WorldServer::stop, this,
 					boost::asio::placeholders::error, 
 					boost::asio::placeholders::signal_number ) ) ;
 	}
 
-	void start(const int& numThreads)
+
+	void start();
+    /*
 	{
 		regSignal(); 
 
@@ -65,31 +62,15 @@ public:
 			m_server.reset(new TcpServer(endpoint, numThreads, handler, m_pIoPool));
 			m_server->startAccept();
 			m_server->startTmr();
-			LOG(L_INF, "Open Server 50000");
+			LOG(L_INF, "Open WorldServer 50000");
 
 			m_pIoPool->run();
-		} else {
-			m_server.reset(new TcpServer(m_ios, endpoint, numThreads, handler));
-			m_server->startAccept();
-			m_server->startTmr();
-			LOG(L_INF, "Open Server 50000");
-
-			std::vector< boost::shared_ptr<boost::thread> > threads;
-			for ( int i=0; i< numThreads; i++ ) {
-				boost::shared_ptr<boost::thread> thread(new boost::thread(
-							boost::bind(&boost::asio::io_service::run, &m_ios)) );
-				threads.push_back(thread);
-			}
-
-			m_ios.run();
-
-			for ( size_t i=0; i< threads.size() ; i++ ) {
-				threads[i]->join();
-			}
 		}
 	}
+    */
 
-	void stop( const boost::system::error_code& error, int sigNum)
+	void stop( const boost::system::error_code& error, int sigNum);
+    /*
 	{
 		LOG(L_FAT, "[%s] sigNum[%d]", __func__, sigNum);
 		if(error) {
@@ -104,15 +85,21 @@ public:
 		}
 		m_ios.stop();
 	}
+    */
+
+    void openedHandler( const Ptr<TcpSession>& session);
+    void closedHandler( const Ptr<TcpSession>& session, const CloseReason& reason);
+    void messageHandler( const Ptr<TcpSession>& session, const uint8_t* data, size_t size);
+    void onMessage();
+
+    Character getCharacter( const int id );
 
 private:
 	boost::asio::io_service&	m_ios;
 	boost::asio::signal_set		m_signals;
-	TcpServerPtr 					m_server;
-	IoServicePoolPtr				m_pIoPool;
-	IoMode							m_ioMode;
+
+    std::mutex m_mutex;
+	Ptr<TcpServer> 				m_server;
+    map<int, Ptr<Room>>         m_rooms;
+    map<int, Ptr<Character>>    m_characters;
 };
-
-typedef boost::shared_ptr<Server> ServerPtr;
-
-#endif
