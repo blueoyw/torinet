@@ -1,6 +1,18 @@
 #include "Room.h"
-#include "Character.h"
 
+bool	Room::attach( Ptr<Character>& character) 
+{
+
+    return true;
+}
+
+bool	Room::dettach( Ptr<Character>& character )
+{
+
+    return true;
+}
+
+/*
 bool	Room::setCharacter( CharacterPtr& ch)
 {
 	if( m_cnt >= MAX_CHARACTER) {
@@ -32,3 +44,4 @@ void	Room::leave( CharacterPtr& ch )
 		}
 	}
 }
+*/

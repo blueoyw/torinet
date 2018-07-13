@@ -1,5 +1,4 @@
-#ifndef _COM_INCLUDE_H_
-#define _COM_INCLUDE_H_
+#pragma once
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -8,6 +7,7 @@
 #include <sys/time.h>
 #include <iostream>
 #include <string>
+#include <string.h>
 
 #include <log4cxx/logger.h>
 #include <log4cxx/propertyconfigurator.h>
@@ -16,5 +16,3 @@
 
 #include "com.h"
 
-
-#endif
