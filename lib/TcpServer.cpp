@@ -6,13 +6,8 @@ namespace net{
 	
 TcpServer::TcpServer(const string name, const ServerConfig& config)
     : _name(name), _config(config), _state(State::Ready)
+      , _ioServicePool( new IoServicePool(config._threadCount) )
 {
-    /*
-     *
-     *
-     *
-     */
-	_ioServicePool.reset(new IoServicePool(config._threadCount));
     for( int i=0; i<config._maxSession; i++ ) {
         _free_session_id.push_back(i+1);
     }

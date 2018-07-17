@@ -19,7 +19,7 @@ public:
 	TcpSession& operator=(const TcpSession&) = delete;
 	TcpSession( UniquePtr<tcp::socket> socket, int id, ServerConfig& config );
 
-	virtual ~TcpSession();
+	virtual ~TcpSession() {}
 
 	virtual int getID() const
 	{

@@ -17,10 +17,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/thread/thread.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/unordered_map.hpp>
 
@@ -32,8 +30,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 */
+#include <boost/program_options.hpp>
+#include <boost/thread/thread.hpp>
 
 #include <memory>
+#include <thread>
 
 #include "../include/com.h"
 #include "../include/Msg.h"
@@ -45,7 +46,7 @@
 #include "GameObject.h"
 #include "Character.h"
 #include "Room.h"
-//#include "WorldServer.h"
+#include "WorldServer.h"
 
 /*
 typedef boost::unordered_map<string, CharacterPtr>				  CharactersMap;

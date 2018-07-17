@@ -1,7 +1,4 @@
 #include "Incl.h"
-#include "Server.h"
-#include "Character.h"
-#include "Room.h"
 
 const wc8* g_ver = "SERVER_R0.1.2";
 const wc8* g_date = __DATE__;
