@@ -1,3 +1,3 @@
 commit : test
 # torinet
-c++ network library using boost asio.
+c++11 network library using boost asio.
