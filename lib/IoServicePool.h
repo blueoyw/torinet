@@ -14,7 +14,7 @@ public:
 	IoServicePool& operator=( const IoServicePool&) = delete;
 
 	explicit IoServicePool(size_t size);
-	~IoServicePool();
+	//~IoServicePool();
 	//IoServicePool(size_t size);
 
 	boost::asio::io_service& getIoService();

@@ -1,6 +1,6 @@
-#ifndef _INCL_H_
-#define _INCL_H_
+#pragma once
 
+/*
 #include <algorithm>
 #include <cstdlib>
 #include <deque>
@@ -17,10 +17,8 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/thread/thread.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/unordered_map.hpp>
 
@@ -31,20 +29,31 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+*/
+#include <boost/program_options.hpp>
+#include <boost/thread/thread.hpp>
+
+#include <memory>
+#include <thread>
 
 #include "../include/com.h"
 #include "../include/Msg.h"
 
 #include "../lib/IoServicePool.h"
 #include "../lib/TcpServer.h"
-//#include "HandleMsg.h"
-#include "Server.h"
+#include "../lib/TcpSession.h"
+
+#include "GameObject.h"
 #include "Character.h"
 #include "Room.h"
+#include "WorldServer.h"
 
+/*
 typedef boost::unordered_map<string, CharacterPtr>				  CharactersMap;
 typedef boost::unordered_map<string, CharacterPtr>::iterator  CharactersItor;
 typedef boost::unordered_map<uint32_t, RoomPtr>				  	RoomMap;
 typedef boost::unordered_map<uint32_t, RoomPtr>::iterator		RoomItor;
+*/
 
-#endif
+//using namespace tori;
+//using namespace tori::net;

@@ -1,49 +1,43 @@
 #pragma once
-
-//#ifndef _CHARACTER_H_
-//#define _CHARACTER_H_
 #include "Incl.h"
-#include "../lib/TcpSession.h"
+#include "GameObject.h"
 #include "Room.h"
 
-typedef enum {
-	E_HEAD = 0,
-	E_END
-} EQUEP_t;
+using namespace tori;
+using namespace tori::net;
+
 
 class Room;
-typedef boost::shared_ptr<Room> RoomPtr;
-typedef boost::weak_ptr<Room> RoomWeakPtr;
 
 class Character
-:public boost::enable_shared_from_this<Character>
+:public GameObject, public boost::enable_shared_from_this<Character>
 {
 public:
-	Character(const string& id, const string& name, TcpSessionPtr sess )
+    enum Equipment {
+        E_HEAD = 0,
+        E_BODY ,
+        E_END
+    };
+
+	Character(const string& id, const string& name, Ptr<TcpSession> sess )
 		:m_id(id), m_name(name), m_sess(sess)
 	{
 	}
 
-	bool setRoom( RoomPtr& room);
+    virtual void update();
+
+	bool setRoom( Ptr<Room>& room);
 	void leaveRoom();
 
-	//getter
-	TcpSessionPtr 	session() { return m_sess; }
-	string& id() { return m_id; }
+	Ptr<TcpSession> session() { return m_sess; }
+	string id() { return m_id; }
 
-	RoomWeakPtr			m_room;
 private:
 	string				m_id;
 	string				m_name;
-	uint64_t				m_exp;
-	uint32_t				m_equip[E_END];
-	TcpSessionPtr		m_sess;
-
+	uint64_t	    	m_exp;
+	Equipment			m_equip[Equipment::E_END];
+	Ptr<TcpSession>		m_sess;
+	WeakPtr<Room>		m_room;
 };
-
-typedef boost::shared_ptr<Character> CharacterPtr;
-typedef boost::weak_ptr<Character> CharacterWeakPtr;
-
-
-//#endif	
 

@@ -5,8 +5,12 @@
   @brief common type define
 */
 
-#ifndef _com_h_
-#define _com_h_
+#pragma once
+
+#include <log4cxx/logger.h>
+#include <log4cxx/propertyconfigurator.h>
+#include <log4cxx/rollingfileappender.h>
+#include <log4cxx/patternlayout.h>
 
 typedef char				wc8;
 typedef unsigned char		wuc8;
@@ -18,21 +22,6 @@ typedef long long			wi64;
 typedef unsigned long long	wui64;
 typedef float				wf32;
 typedef double				wf64;
-
-typedef boost::shared_ptr<boost::asio::deadline_timer>	timer_ptr;
-typedef boost::chrono::system_clock::time_point time_point;
-
-typedef boost::posix_time::microsec USECS;
-typedef boost::posix_time::millisec MSECS;
-typedef boost::posix_time::seconds 	SECS;
-typedef boost::posix_time::minutes 	MINS;
-typedef boost::posix_time::hours 	HOURS;
-typedef boost::gregorian::days 		DAYS;
-
-typedef boost::asio::ip::address       address;
-typedef boost::asio::ip::tcp::endpoint ep;
-
-typedef boost::shared_ptr<void>  VoidPtr;
 
 #define KILO 1000UL
 #define MEGA (KILO * KILO)
@@ -97,6 +86,24 @@ inline void initLog4cxx(wc8* p_exe)
 
     ELOG;
 }
+
+#if 0
+
+typedef boost::shared_ptr<boost::asio::deadline_timer>	timer_ptr;
+typedef boost::chrono::system_clock::time_point time_point;
+
+typedef boost::posix_time::microsec USECS;
+typedef boost::posix_time::millisec MSECS;
+typedef boost::posix_time::seconds 	SECS;
+typedef boost::posix_time::minutes 	MINS;
+typedef boost::posix_time::hours 	HOURS;
+typedef boost::gregorian::days 		DAYS;
+
+typedef boost::asio::ip::address       address;
+typedef boost::asio::ip::tcp::endpoint ep;
+
+typedef boost::shared_ptr<void>  VoidPtr;
+
 
 inline wui64 swap64(wui64 a)
 {
@@ -591,7 +598,5 @@ struct wui64_hash {
 		return seed;
 	}
 };
+#endif
 
-
-
-#endif	// _com_h_

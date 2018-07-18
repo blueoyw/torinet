@@ -1,20 +1,16 @@
 #include "Incl.h"
-#include "Server.h"
-#include "Character.h"
-#include "Room.h"
 
 const wc8* g_ver = "SERVER_R0.1.2";
 const wc8* g_date = __DATE__;
 const wc8* g_time = __TIME__;
-ServerPtr server;
 
 //world global data
-CharactersMap  	g_characters;
-boost::mutex		g_charactersLock;
+//CharactersMap  	g_characters;
+//boost::mutex		g_charactersLock;
 
-int32_t			g_roomId = 0;
-RoomMap			g_rooms;
-boost::mutex	g_roomsLock;
+//int32_t			g_roomId = 0;
+//RoomMap			g_rooms;
+//boost::mutex	g_roomsLock;
 //world end
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger(""));
@@ -22,7 +18,7 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger(""));
 int main(int argc, char* argv[])
 {
 	int 	 numThreads = 8;
-	IoServicePoolPtr ioPool;
+	//IoServicePoolPtr ioPool;
 	try
 	{
 		boost::program_options::options_description desc("Allowed options");
@@ -58,6 +54,8 @@ int main(int argc, char* argv[])
 		LOG(L_INF, "Compiled on %s %s", g_date, g_time);
 		LOG(L_INF, "%d threads", numThreads );
 
+
+        /*
 		ioPool.reset( new IoServicePool(numThreads)) ;
 		boost::asio::io_service& ios = ioPool->getIoService();
 
@@ -86,13 +84,18 @@ int main(int argc, char* argv[])
 			LOG(L_INF, "daemon started");
 		}
 
+	    TcpServer(const string name, const ServerConfig& config);
 
+        ServerPtr server;
 		server.reset( new Server(ioPool) );
 		server->start(numThreads);
 
 		g_rooms.clear();
 		g_characters.clear();
+        */
 		std::cout << "end" << std::endl;
+
+        getchar();
 	} catch (std::exception& e) {
 		LOG(L_WAR, "Exception:%s", e.what() );
 	}

@@ -1,41 +1,33 @@
 #pragma once
 
-//#ifndef _ROOM_H_
-//#define _ROOM_H_
 #include "Incl.h"
-#include "../lib/TcpSession.h"
+#include <set>
+
+using namespace tori;
+using namespace tori::net;
 
 class Character;
-
-typedef boost::shared_ptr< Character >	CharacterPtr;
 
 class Room
 :public boost::enable_shared_from_this<Room>
 {
 public:
-	enum { MAX_CHARACTER=2048 };
+	enum { MAX_CHARACTER=8 };
 
-	Room( CharacterPtr master):m_master(master),m_cnt(0), m_id(0)
+	Room( Ptr<Character> master, int id): m_master(master),m_cnt(1), m_id(id)
 	{
 	}
 
-	bool	setCharacter( CharacterPtr& ch) ;
-	bool	getCharacter( int32_t& idx, CharacterPtr& ch );
-	void	leave( CharacterPtr& ch ) ;
-	void	setId( int32_t& id){ m_id= id; }
-	int32_t	id(){ return m_id; }
-	int32_t	cnt(){ return m_cnt; }
+	bool	attach( Ptr<Character>& character) ;
+	bool	dettach( Ptr<Character>& character );
+
+	int32_t	getId(){ return m_id; }
+	int32_t	getCount(){ return m_cnt; }
 
 private:
-	CharacterPtr		m_characters[MAX_CHARACTER];
-	CharacterPtr		m_master;
+    set< Ptr<Character> > m_characters;
+	Ptr<Character>		m_master;
+
 	int					m_cnt;
 	int32_t				m_id;
 };
-
-typedef boost::shared_ptr<Room> RoomPtr;
-typedef boost::weak_ptr<Room> RoomWeakPtr;
-
-
-//#endif	
-

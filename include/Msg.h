@@ -7,6 +7,7 @@
 
 #include "Incl.h"
 #include "MsgId.h"
+#include <deque>
 
 using namespace std;
 const int SERVER_TCP_PORT 	  = 40000;
@@ -34,6 +35,7 @@ typedef struct {
 // util class
 /////////////////////////////////////////////////////
 
+//POD type class
 class Msg
 {
 public:

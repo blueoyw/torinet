@@ -9,7 +9,7 @@
 #include <list>
 #include <set>
 #include <vector>
-//#include <thread>
+#include <thread>
 #include <memory>
 
 #include <boost/bind.hpp>

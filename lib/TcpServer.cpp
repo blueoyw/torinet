@@ -6,13 +6,8 @@ namespace net{
 	
 TcpServer::TcpServer(const string name, const ServerConfig& config)
     : _name(name), _config(config), _state(State::Ready)
+      , _ioServicePool( new IoServicePool(config._threadCount) )
 {
-    /*
-     *
-     *
-     *
-     */
-	_ioServiceLoop.reset(new IoServicePool(config._threadCount));
     for( int i=0; i<config._maxSession; i++ ) {
         _free_session_id.push_back(i+1);
     }
@@ -62,7 +57,7 @@ inline void TcpServer::handleClose( const Ptr<TcpSession>& session, CloseReason 
 
 void TcpServer::listen(tcp::endpoint ep)
 {
-    UniquePtr<tcp::acceptor> acceptor( new tcp::acceptor( _ioServiceLoop->getIoService() ) );
+    UniquePtr<tcp::acceptor> acceptor( new tcp::acceptor( _ioServicePool->getIoService() ) );
     acceptor->open( ep.protocol() );
     acceptor->set_option( tcp::acceptor::reuse_address(true));
     acceptor->bind( ep );
@@ -76,7 +71,7 @@ void TcpServer::listen(tcp::endpoint ep)
 
 void TcpServer::startAccept()
 {
-    UniquePtr<tcp::socket> socket(new tcp::socket(_ioServiceLoop->getIoService()));
+    UniquePtr<tcp::socket> socket(new tcp::socket(_ioServicePool->getIoService()));
     _socket = std::move(socket);
     _acceptor->async_accept( *_socket,
                             [this, self=shared_from_this()]( error_code error )
