@@ -14,20 +14,20 @@ class Room
 public:
 	enum { MAX_CHARACTER=8 };
 
-	Room( Ptr<Character> master, int id): m_master(master),m_cnt(1), m_id(id)
+	Room( Ptr<Character> master, int id): master_(master),cnt_(1), id_(id)
 	{
 	}
 
 	bool	attach( Ptr<Character>& character) ;
 	bool	dettach( Ptr<Character>& character );
 
-	int32_t	getId(){ return m_id; }
-	int32_t	getCount(){ return m_cnt; }
+	int32_t	getId(){ return id_; }
+	int32_t	getCount(){ return cnt_; }
 
 private:
-    set< Ptr<Character> > m_characters;
-	Ptr<Character>		m_master;
+    set< Ptr<Character> > characters_;
+	Ptr<Character>		master_;
 
-	int					m_cnt;
-	int32_t				m_id;
+	int					cnt_;
+	int32_t				id_;
 };

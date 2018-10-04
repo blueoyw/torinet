@@ -28,25 +28,26 @@ using namespace std;
 using namespace tori;
 using namespace tori::net;
 
-class WorldServer {
+class ChatServer {
 public:
-	WorldServer( const string name, const ServerConfig& config );
+	ChatServer( const string name, const ServerConfig& config );
 
-	void start();
+	void start(string ip, int port);
 	void stop( const boost::system::error_code& error, int sigNum);
 
-    void openedHandler( const Ptr<TcpSession>& session);
-    void closedHandler( const Ptr<TcpSession>& session, const CloseReason& reason);
-    void messageHandler( const Ptr<TcpSession>& session, const uint8_t* data, size_t size);
+    //void openedHandler( const Ptr<TcpSession>& session);
+    void openedHandler( const Ptr<Session>& session);
+    void closedHandler( const Ptr<Session>& session, const CloseReason& reason);
+    void messageHandler( const Ptr<Session>& session, const uint8_t* data, size_t size);
     void onMessage();
 
-    Character getCharacter( const int id );
+    Ptr<Character> getCharacter(int id );
 
 private:
-	Ptr<TcpServer> 				m_server;
-	boost::asio::io_service&	m_ios;
+	Ptr<TcpServer> 				server_;
+	boost::asio::io_service&	ios_;
 
-    std::mutex m_mutex;
-    map<int, Ptr<Room>>         m_rooms;
-    map<int, Ptr<Character>>    m_characters;
+    std::mutex lock_;
+    map<int, Ptr<Room>>         rooms_;
+    map<int, Ptr<Character>>    characters_;
 };

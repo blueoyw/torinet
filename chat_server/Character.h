@@ -13,14 +13,8 @@ class Character
 :public GameObject, public boost::enable_shared_from_this<Character>
 {
 public:
-    enum Equipment {
-        E_HEAD = 0,
-        E_BODY ,
-        E_END
-    };
-
 	Character(const string& id, const string& name, Ptr<TcpSession> sess )
-		:m_id(id), m_name(name), m_sess(sess)
+		:id_(id), name_(name), sess_(sess)
 	{
 	}
 
@@ -29,15 +23,13 @@ public:
 	bool setRoom( Ptr<Room>& room);
 	void leaveRoom();
 
-	Ptr<TcpSession> session() { return m_sess; }
-	string id() { return m_id; }
+	Ptr<TcpSession> session() { return sess_; }
+	string id() { return id_; }
 
 private:
-	string				m_id;
-	string				m_name;
-	uint64_t	    	m_exp;
-	Equipment			m_equip[Equipment::E_END];
-	Ptr<TcpSession>		m_sess;
-	WeakPtr<Room>		m_room;
+	string				id_;
+	string				name_;
+	Ptr<TcpSession>		sess_;
+	WeakPtr<Room>		room_;
 };
 

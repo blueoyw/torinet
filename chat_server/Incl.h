@@ -16,4 +16,6 @@
 #include "GameObject.h"
 #include "Character.h"
 #include "Room.h"
-#include "WorldServer.h"
+//#include "WorldServer.h"
+#include "ChatServer.h"
+

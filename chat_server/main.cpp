@@ -11,7 +11,7 @@ const wc8* g_time = __TIME__;
 //int32_t			g_roomId = 0;
 namespace Global
 {
-    static TcpServer* chatServer;
+    static ChatServer* chatServer;
 
     //static RoomMap			g_rooms;
     //static boost::mutex	g_roomsLock;
@@ -22,43 +22,22 @@ log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger(""));
 
 using namespace tori;
 
-void runServer(string address, int port)
+void runServer(string address, int port, int numThreads)
 {
     const string name = "chatServer";
 
-    //ywoh to do config file
+    //config
     net::ServerConfig config;
-    config._threadCount = 1;
+    config._threadCount = numThreads;
 
-    //ywoh to do regist handler
-    Global::chatServer = new TcpServer(name, config);
+    Global::chatServer = new ChatServer(name, config);
     Global::chatServer->start(address, port);
-
-    Global::registerSessionOpenedHandler();
-
-	virtual void registerSessionOpenedHandler(const SessionOpenedHandler& handler)
-	{
-		_openedHandler = handler;
-	}
-
-	virtual void registerSessionClosedHandler(const SessionClosedHandler& handler)
-	{
-		_closedHandler = handler;
-	}
-
-	virtual void registerMessageHandler(const MessageHandler& handler)
-	{
-		_messageHandler = handler;
-	}
-
-    //g_rooms.clear();
-    //g_characters.clear();
 }
 
 int main(int argc, char* argv[])
 {
 	int 	 numThreads = 8;
-	IoServicePoolPtr ioPool;
+    boost::asio::io_service ios; 
 	try
 	{
 		boost::program_options::options_description desc("Allowed options");
@@ -94,9 +73,6 @@ int main(int argc, char* argv[])
 		LOG(L_INF, "Compiled on %s %s", g_date, g_time);
 		LOG(L_INF, "%d threads", numThreads );
 
-		ioPool.reset( new IoServicePool(numThreads)) ;
-		boost::asio::io_service& ios = ioPool->getIoService();
-
 		if ( vm.count("daemon") ) {
 			ios.notify_fork(boost::asio::io_service::fork_prepare);
 
@@ -122,7 +98,7 @@ int main(int argc, char* argv[])
 			LOG(L_INF, "daemon started");
 		}
 
-        runServer("127.0.0.1", 20000);
+        runServer("127.0.0.1", 20000, numThreads);
 
 		std::cout << "end" << std::endl;
 
