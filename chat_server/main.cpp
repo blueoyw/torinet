@@ -9,14 +9,13 @@ const wc8* g_time = __TIME__;
 //boost::mutex		g_charactersLock;
 
 //int32_t			g_roomId = 0;
-class Global
+namespace Global
 {
-public: 
-    static Ptr<TcpServer> chatServer;
+    static TcpServer* chatServer;
 
     //static RoomMap			g_rooms;
     //static boost::mutex	g_roomsLock;
-};
+}
 //world end
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger(""));
@@ -29,15 +28,28 @@ void runServer(string address, int port)
 
     //ywoh to do config file
     net::ServerConfig config;
-    config._threadCount = ;
-    config._maxSession = ;
-    config._noDelay = ;
-    config._minReceive = ;
-    config._maxReceiveBufferSize = ;
+    config._threadCount = 1;
 
     //ywoh to do regist handler
-    Global::chatServer.reset(new TcpServer(name, config));
-    chatServer->start(address, port);
+    Global::chatServer = new TcpServer(name, config);
+    Global::chatServer->start(address, port);
+
+    Global::registerSessionOpenedHandler();
+
+	virtual void registerSessionOpenedHandler(const SessionOpenedHandler& handler)
+	{
+		_openedHandler = handler;
+	}
+
+	virtual void registerSessionClosedHandler(const SessionClosedHandler& handler)
+	{
+		_closedHandler = handler;
+	}
+
+	virtual void registerMessageHandler(const MessageHandler& handler)
+	{
+		_messageHandler = handler;
+	}
 
     //g_rooms.clear();
     //g_characters.clear();
@@ -46,7 +58,7 @@ void runServer(string address, int port)
 int main(int argc, char* argv[])
 {
 	int 	 numThreads = 8;
-	//IoServicePoolPtr ioPool;
+	IoServicePoolPtr ioPool;
 	try
 	{
 		boost::program_options::options_description desc("Allowed options");
@@ -110,7 +122,7 @@ int main(int argc, char* argv[])
 			LOG(L_INF, "daemon started");
 		}
 
-        runServer();
+        runServer("127.0.0.1", 20000);
 
 		std::cout << "end" << std::endl;
 

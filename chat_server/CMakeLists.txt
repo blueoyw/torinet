@@ -39,9 +39,9 @@ SET ( TORINET_FILES
     )
 
 SET ( SRC_FILES
-    "${PROJECT_SOURCE_DIR}/Character.cpp"
-    "${PROJECT_SOURCE_DIR}/Room.cpp"
-    "${PROJECT_SOURCE_DIR}/WorldServer.cpp"
+    #"${PROJECT_SOURCE_DIR}/Character.cpp"
+    #"${PROJECT_SOURCE_DIR}/Room.cpp"
+    #"${PROJECT_SOURCE_DIR}/WorldServer.cpp"
     "${PROJECT_SOURCE_DIR}/main.cpp"
     )
 
@@ -70,7 +70,8 @@ SET ( CMAKE_C_FLAGS_RELEASE "-DRELEASE -DC_FLAGS" )
 SET ( CMAKE_EXE_LINKER_FLAGS_RELEASE "-DRELEASE -DLINKER_FLAGS" )
 
 # add library to make
-ADD_LIBRARY( torinet STATIC ${TORINET_FILES} )
+#ADD_LIBRARY( torinet STATIC ${TORINET_FILES} )
+
 # add application to make
 ADD_EXECUTABLE( ${OUTPUT_ELF} ${SRC_FILES} )
 # add dependency for application.
