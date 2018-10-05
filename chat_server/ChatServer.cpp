@@ -53,11 +53,10 @@ void ChatServer::stop(const boost::system::error_code& error, int sigNum)
     ios_.stop();
 }
 
-//void ChatServer::openedHandler(const Ptr<TcpSession>& session)
 void ChatServer::openedHandler(const Ptr<Session>& session)
 {
     LOG(L_INF, "[%s] ID[%d]", __func__, session->getID());
-
+    //Msg를 받아서 처리.
 }
 
 void ChatServer::closedHandler(const Ptr<Session>& session, const CloseReason& reason)

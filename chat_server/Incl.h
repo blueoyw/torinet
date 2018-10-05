@@ -9,9 +9,9 @@
 #include "../include/com.h"
 #include "../include/Msg.h"
 
-#include "../lib/IoServicePool.h"
-#include "../lib/TcpServer.h"
-#include "../lib/TcpSession.h"
+#include "../Src/IoServicePool.h"
+#include "../Src/TcpServer.h"
+#include "../Src/TcpSession.h"
 
 #include "GameObject.h"
 #include "Character.h"

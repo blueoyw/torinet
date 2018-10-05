@@ -1,6 +1,6 @@
 #include "Character.h"
 
-bool	Character::setRoom( Ptr<Room>& room)
+bool Character::setRoom( Ptr<Room>& room)
 {
     /*
 	Ptr<Room> tmp = m_room.lock();
@@ -14,11 +14,10 @@ bool	Character::setRoom( Ptr<Room>& room)
     return true;
 }
 
-void	Character::leaveRoom()
+void Character::leaveRoom()
 {
 }
 
 void Character::update()
 {
-
 }

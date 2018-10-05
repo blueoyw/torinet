@@ -71,50 +71,51 @@ void TcpServer::listen(tcp::endpoint ep)
 
 void TcpServer::startAccept()
 {
+    LOG (L_INF, "[%s]", __func__);
     UniquePtr<tcp::socket> socket(new tcp::socket(_ioServicePool->getIoService()));
     _socket = std::move(socket);
     _acceptor->async_accept( *_socket,
-                            [this, self=shared_from_this()]( error_code error )
+                [this, self=shared_from_this()]( error_code error )
+                {
+                    if(error ) 
+                    {
+                        LOG(L_ERR, "%s", error.message().c_str()); 
+                        return;
+                    }
+
+                    if( _state == State::Stop ||
+                       _sessions.size() >= _config._maxSession) 
+                    {
+                        error_code ec;
+                        _socket->shutdown(tcp::socket::shutdown_both, ec );
+                        _socket->close();
+                        _socket.reset();
+                        return;
+                    }
+                    else if (!error )
+                    {
+                        int id = _free_session_id.front();
+                        _free_session_id.pop_front();
+
+                        auto session = std::make_shared<TcpSession> ( std::move(_socket), id, _config );
+                        session->_openedHandler = _openedHandler;
+                        session->_closedHandler = [this]
+                            ( const Ptr<TcpSession>& session, CloseReason closeReason ) 
                             {
-                                if(error ) 
-                                {
-                                    LOG(L_ERR, "%s", error.message().c_str()); 
-                                    return;
-                                }
+                                this->handleClose( session, closeReason );
+                            };
+                        session->_messageHandler = _messageHandler;
 
-                                if( _state == State::Stop ||
-                                   _sessions.size() >= _config._maxSession) 
-                                {
-                                    error_code ec;
-                                    _socket->shutdown(tcp::socket::shutdown_both, ec );
-                                    _socket->close();
-                                    _socket.reset();
-                                    return;
-                                }
-                                else if (!error )
-                                {
-                                    int id = _free_session_id.front();
-                                    _free_session_id.pop_front();
+                        {
+                            std::lock_guard<std::mutex> guard(_mutex);
+                            _sessions.emplace( make_pair( session->getID(), session ));
+                        }
+                        session->start();
+                    }
 
-                                    auto session = std::make_shared<TcpSession> ( std::move(_socket), id, _config );
-                                    session->_openedHandler = _openedHandler;
-                                    session->_closedHandler = [this]
-                                        ( const Ptr<TcpSession>& session, CloseReason closeReason ) 
-                                        {
-                                            this->handleClose( session, closeReason );
-                                        };
-                                    session->_messageHandler = _messageHandler;
-
-                                    {
-                                        std::lock_guard<std::mutex> guard(_mutex);
-                                        _sessions.emplace( make_pair( session->getID(), session ));
-                                    }
-                                    session->start();
-                                }
-
-                                startAccept();
-
-                            });
+                    startAccept();
+                });
+    _ioServicePool->run();
 }
 
 #if 0

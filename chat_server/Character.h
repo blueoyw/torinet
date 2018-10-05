@@ -6,7 +6,6 @@
 using namespace tori;
 using namespace tori::net;
 
-
 class Room;
 
 class Character

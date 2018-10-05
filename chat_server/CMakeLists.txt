@@ -42,20 +42,25 @@ SET ( SRC_FILES
     #"${PROJECT_SOURCE_DIR}/Character.cpp"
     #"${PROJECT_SOURCE_DIR}/Room.cpp"
     #"${PROJECT_SOURCE_DIR}/WorldServer.cpp"
+    "${PROJECT_SOURCE_DIR}/ChatServer.cpp"
     "${PROJECT_SOURCE_DIR}/main.cpp"
     )
 
 # 공통 헤더 파일 Include 디렉토리 (-I)
 #INCLUDE_DIRECTORIES ( include driver/include )
-FIND_PACKAGE( Boost 1.67 COMPONENTS system filesystem thread REQUIRED )
+#use boost static library
+set(Boost_USE_STATIC_LIBS ON)
+#add static boost 
+FIND_PACKAGE( Boost 1.67 COMPONENTS system filesystem thread program_options REQUIRED )
 INCLUDE_DIRECTORIES ( "${PROJECT_BINARY_DIR}" "${PROJECT_INCLUDE_DIR}" $(Boost_INCLUDE_DIRS) )
 
 # 공통 컴파일 옵션, 링크 옵션
 ADD_COMPILE_OPTIONS ( -g -Wall -fno-strict-aliasing -std=c++0x -O2 )
 #SET ( CMAKE_EXE_LINKER_FLAGS "-static -Wl,--gc-sections" )
 
-# 공통 링크 라이브러리 (-l)
-LINK_LIBRARIES( log4cxx boost_system boost_filesystem boost_program_options boost_thread torinet pthread )
+# 공통 링크 라이브러리 (-l) sso
+#LINK_LIBRARIES( log4cxx boost_system boost_filesystem boost_program_options boost_thread torinet pthread )
+LINK_LIBRARIES( log4cxx torinet pthread )
 
 # 공통 링크 라이브러리 디렉토리 (-L)
 #LINK_DIRECTORIES ( /usr/lib )
@@ -75,4 +80,6 @@ SET ( CMAKE_EXE_LINKER_FLAGS_RELEASE "-DRELEASE -DLINKER_FLAGS" )
 # add application to make
 ADD_EXECUTABLE( ${OUTPUT_ELF} ${SRC_FILES} )
 # add dependency for application.
-TARGET_LINK_LIBRARIES( ${OUTPUT_ELF} PUBLIC torinet )
+#TARGET_LINK_LIBRARIES( ${OUTPUT_ELF} PUBLIC torinet )
+#TARGET_LINK_LIBRARIES( ${OUTPUT_ELF} PUBLIC torinet ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES( ${OUTPUT_ELF} torinet ${Boost_LIBRARIES})

@@ -26,6 +26,7 @@ $(LIB_A) : $(OBJS)
 
 install :
 	cp $(LIB_A) /usr/lib/
+	cp $(LIB_A) ../Lib/
 
 clean:
 	rm -rf *.o $(LIB_A)
