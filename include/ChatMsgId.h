@@ -6,11 +6,8 @@
 typedef enum {
 	NONE_MSG_ID = 0,
 
-	rqCrteUser,						
-	rsCrteUser,						
-
-	rqLogin,
-	rsLogin,
+	rqCreateUser,						
+	rsCreateUser,						
 
     rqMessage,
     rsMessage,

@@ -4,32 +4,35 @@
 #include "ChatMsgId.h"
 #include <deque>
 
+namespace tori
+{
+namespace message
+{
+
 const int MAX_MSG_LENGTH = 1024;
 
-struct MsgHeader {
+struct MessageHeader {
 	int8_t		version;			
 	int8_t		result;			
 	int16_t		bodyLength;
-	uint32_t		msgId;
+	uint32_t	msgId;
 };
 
-struct MsgBody {
+struct MessageBody {
 	unsigned char  data[MAX_MSG_LENGTH];
 };
 
-/*
-struct Msg{
-	MsgHeader	hdr;
-	MsgBody		body;
-} __attribute__((packed)) cpMsg_t;
-*/
+struct Message{
+	MessageHeader	hdr;
+	MessageBody		body;
+} __attribute__((packed));
 
 /////////////////////////////////////////////////////
 // util class
 /////////////////////////////////////////////////////
 
 //POD type class
-class Msg
+class MessageManager
 {
 public:
     enum { hdrLength = sizeof(cpMsgHeader_t) };
@@ -37,11 +40,11 @@ public:
     enum { version = 1 };
     //enum { max_body_length = MAX_CLI_DATA-sizeof(cliHeader_t) };
 
-    Msg()
+    MessageManager()
     {
     }
 
-    Msg(cpMsg_t& msg):msg_(msg)
+    MessageManager(cpMsg_t& msg):msg_(msg)
     {
     }
 
@@ -144,53 +147,66 @@ private:
     cpMsg_t     msg_;
 };
 
-typedef std::deque<Msg> MessageQueue;
+typedef std::deque<MessageManager> MessageQueue;
 
 /////////////////////////////////////////////////////
 // body structures
 /////////////////////////////////////////////////////
 //////////// MSG BODY////////////////////
-typedef struct {
-	char				id[36];		// 1: success  0: fail 				
-	char				passwd[36];		// fail reason
-} rq_CrteUser_t;
-
-typedef rq_CrteUser_t rq_Login_t;
-
-typedef struct {
-	char				id[36];		// 1: success  0: fail 				
-} rq_CrteParty_t;
-
-typedef struct {
-	uint32_t			partyId;			// result code
-} rs_CrteParty_t;
-
-typedef struct {
-	uint16_t			userCnt;
-	char				joinUserId[36];		//id list sperated by ";"
-} partyList_t;
-
-typedef struct {
-	char				fromId[36];		// from 				
-	char				toId[36];		// to				
-	uint32_t			partyId;		// 1: success  0: fail 				
-} rq_JoinUser_t;
-
-typedef rs_CrteParty_t rs_JoinUser_t;
-typedef rq_JoinUser_t rq_ReqJoin_t;
-
-typedef struct {
-	uint32_t			partyId;
-	char				msg[512];		// from 				
-} nf_Message_t;
-
-struct NfEco
+struct RqCreateUser
 {
-	char				msg[512];		// from 				
-    NfEco()
+    RqCreateUser()
     {
-        memset( msg, 0x00, sizeof(msg));
+        memset(id, 0x00, sizeof(id));
     }
+	char id[36];		// 1: success  0: fail 				
 };
 
-#endif // CP_MSG_H_
+struct RsCreateUser
+{
+    enum ErrorCode
+    {
+        ERROR_NONE = 0,
+        ERROR_ALREADY_USE
+    };
+
+    RsCreateUser()
+        :errorCode(ERROR_NONE)
+    {
+        memset(id, 0x00, sizeof(id));
+    }
+
+    ErrorCode errorCode;
+	char id[36];		// 1: success  0: fail 				
+};
+
+struct RqMessage
+{
+    RqMessage()
+        :length(0)
+    {
+        memset(message, 0x00, sizeof(id));
+    }
+
+    uint32_t length;
+    char message[128];
+};
+
+struct RsMessage
+{
+    enum ErrorCode
+    {
+        ERROR_NONE = 0,
+        ERROR_SEND
+    };
+
+    RsMessage()
+        :errorCode(ERROR_NONE)
+    {
+    }
+
+    ErrorCode errorCode;
+};
+
+}
+}
