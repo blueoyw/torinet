@@ -27,6 +27,7 @@ public:
 	virtual void send( Msg& msg ) = 0;
 	virtual void close() = 0;
 	virtual bool isOpen() const = 0;
+	virtual Msg& getMsg() = 0;
 	//virtual asio::strand& getStrand() const = 0;
 
 protected:
@@ -40,7 +41,8 @@ using SessionOpenedHandler = function<void(const Ptr<Session>&)>;
 using SessionClosedHandler = function<void(const Ptr<Session >&, const CloseReason&)>;
 
 // Receive handler type.
-using MessageHandler = function<void(const Ptr<Session>&, const uint8_t*, size_t)>;
+//using MessageHandler = function<void(const Ptr<Session>&, const uint8_t*, size_t)>;
+using MessageHandler = function<void(const Ptr<Session>&)>;
 
 
 }

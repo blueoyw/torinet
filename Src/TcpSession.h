@@ -35,9 +35,11 @@ public:
 	virtual void close() ;
 	virtual bool isOpen() const ;
 
+    virtual Msg& getMsg() { return _msg; }
+
     std::function<void(const Ptr<TcpSession>&)> _openedHandler;
     std::function<void(const Ptr<TcpSession>&, const CloseReason&)>  _closedHandler;
-    std::function<void(const Ptr<TcpSession>&, const uint8_t*, size_t)> _messageHandler;
+    std::function<void(const Ptr<TcpSession>&)> _messageHandler;
 
 private:
 	void 	handleWrite( const error_code& error);

@@ -2,8 +2,7 @@
 //	version : comment
 //	   1    : first commit
 
-#ifndef CP_MSG_H_
-#define CP_MSG_H_
+#pragma once
 
 #include "Incl.h"
 #include "MsgId.h"
@@ -157,47 +156,36 @@ typedef std::deque<Msg> MessageQueue;
 // body structures
 /////////////////////////////////////////////////////
 //////////// MSG BODY////////////////////
-typedef struct {
-	char				id[36];		// 1: success  0: fail 				
-	char				passwd[36];		// fail reason
-} rq_CrteUser_t;
-
-typedef rq_CrteUser_t rq_Login_t;
-
-typedef struct {
-	char				id[36];		// 1: success  0: fail 				
-} rq_CrteParty_t;
-
-typedef struct {
-	uint32_t			partyId;			// result code
-} rs_CrteParty_t;
-
-typedef struct {
-	uint16_t			userCnt;
-	char				joinUserId[36];		//id list sperated by ";"
-} partyList_t;
-
-typedef struct {
-	char				fromId[36];		// from 				
-	char				toId[36];		// to				
-	uint32_t			partyId;		// 1: success  0: fail 				
-} rq_JoinUser_t;
-
-typedef rs_CrteParty_t rs_JoinUser_t;
-typedef rq_JoinUser_t rq_ReqJoin_t;
-
-typedef struct {
-	uint32_t			partyId;
-	char				msg[512];		// from 				
-} nf_Message_t;
-
-struct NfEco
+struct RqCreateUser
 {
-	char				msg[512];		// from 				
-    NfEco()
+    RqCreateUser()
     {
-        memset( msg, 0x00, sizeof(msg));
+        memset (id, 0x00, sizeof(id));
     }
+
+	char				id[36];		// 1: success  0: fail 				
 };
 
-#endif // CP_MSG_H_
+struct RsCreateUser
+{
+    enum ErrorCode
+    {
+        ERROR_NONE
+    };
+
+    RsCreateUser()
+        :errorCode(ERROR_NONE)
+    {
+    }
+
+    ErrorCode errorCode;
+};
+
+struct NfMessage 
+{
+    NfMessage()
+    {
+        memset (message, 0x00, sizeof(message));
+    }
+    char message[256];
+};

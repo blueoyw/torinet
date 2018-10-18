@@ -108,14 +108,10 @@ void 	TcpSession::handleReadBody( uint32_t& msgId, int16_t& length, const error_
     }
     else 
     {
-		//LOG(L_DEB, "msgId[%x]", msgId );
-
+		LOG(L_DEB, "msgId[%x]", msgId );
         _rx += _msg.length();
-        //TO DO
-        /*
-		if( !_handler->read(msgId, length, shared_from_this(), m_owner ) ) 
-			LOG(L_ERR, "[%s] process_msg fail", __func__ );
-        */
+
+        _messageHandler(shared_from_this());
 
         read( Msg::hdrLength );
 	}

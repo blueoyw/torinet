@@ -6,28 +6,10 @@
 
 typedef enum {
 	NONE_MSG_ID = 0,
-
-	CHARACTER_MSG_ID	= 0x1000,
-
-	rq_CrteUser,						
-	rs_CrteUser,						
-	rq_Login,
-	rs_Login,
-
-	rq_CrteParty,					
-	rs_CrteParty,				
-
-	rq_JoinUser,					
-	rs_JoinUser,					
-
-	rq_ReqJoin,					
-	rs_ReqJoin,					
-
-	nf_Message,					
-
-	ID_nf_Eco,					
-
-	END_MSG_ID = 0xFFFF	
+    RQ_CREATE_USER,
+    RS_CREATE_USER,
+    NF_MESSAGE,
+    MAX_MSG_ID
 } MsgId_t;
 
 typedef enum {

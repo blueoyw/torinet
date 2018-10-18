@@ -56,6 +56,10 @@ public:
 	{
 		_messageHandler = handler;
 	}
+
+	std::mutex _mutex;
+	map<int, Ptr<Session> > _sessions;
+
 protected:
     TcpServer();
 
@@ -70,8 +74,6 @@ private:
 	State _state;
 
 	Ptr<IoServicePool> _ioServicePool;
-	std::mutex _mutex;
-	map<int, Ptr<Session> > _sessions;
     deque<int>  _free_session_id;
 
 	SessionOpenedHandler _openedHandler;

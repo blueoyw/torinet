@@ -44,7 +44,7 @@ public:
     {
     }
 
-    MessageManager(cpMsg_t& msg):msg_(msg)
+    MessageManager(Message& msg):msg_(msg)
     {
     }
 
@@ -58,12 +58,12 @@ public:
         return &msg_.hdr;
     }
 
-    const cpMsg_t* data() const
+    const Message* data() const
     {
         return &msg_;
     }
 
-    cpMsg_t* data()
+    Message* data()
     {
         return &msg_;
     }
@@ -144,7 +144,7 @@ public:
     }
 
 private:
-    cpMsg_t     msg_;
+    Message     msg_;
 };
 
 typedef std::deque<MessageManager> MessageQueue;

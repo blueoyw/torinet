@@ -38,12 +38,17 @@ public:
     //void openedHandler( const Ptr<TcpSession>& session);
     void openedHandler( const Ptr<Session>& session);
     void closedHandler( const Ptr<Session>& session, const CloseReason& reason);
-    void messageHandler( const Ptr<Session>& session, const uint8_t* data, size_t size);
-    void onMessage();
+    void messageHandler(const Ptr<Session>& session);
 
     Ptr<Character> getCharacter(int id );
 
 private:
+    //message handlers
+    void rqCreateUser(const Ptr<Session>& session);
+    void nfMessage(const Ptr<Session>& session);
+
+private:
+
 	Ptr<TcpServer> 				server_;
 	boost::asio::io_service&	ios_;
 

@@ -25,9 +25,9 @@ void ChatServer::start(string ip, int port)
             closedHandler(session, reason);
         });
     server_->registerMessageHandler(
-        [this](const Ptr<Session>& session, const uint8_t* data, size_t size)
+        [this](const Ptr<Session>& session)
         {
-            messageHandler(session, data, size);
+            messageHandler(session);
         });
 
     server_->start(ip, port);
@@ -64,15 +64,44 @@ void ChatServer::closedHandler(const Ptr<Session>& session, const CloseReason& r
     LOG(L_INF, "[%s] ID[%d] reason[%d]", __func__, session->getID(), reason);
 }
 
-void ChatServer::messageHandler(const Ptr<Session>& session, const uint8_t* data, size_t size)
+void ChatServer::messageHandler(const Ptr<Session>& session)
 {
-    LOG(L_INF, "[%s] ID[%d] data[%p] size[%ld]", __func__, session->getID(), data, size);
+    Msg& msg = session->getMsg();
+    int id = session->getID();
+    LOG(L_INF, "[%s] ID[%d] data[%p] size[%d]", __func__, id, msg.body(), msg.bodyLength());
+
+    //handle messge
+    switch(id)
+    {
+    case RQ_CREATE_USER:
+        rqCreateUser(session);
+        break;
+    case NF_MESSAGE:
+        nfMessage(session);
+        break;
+    default:
+        LOG (L_ERR, "[%s] unknown id[%d]", __func__, id);
+        break;
+    }
 
 }
 
-void ChatServer::onMessage()
+void ChatServer::rqCreateUser(const Ptr<Session>& session)
 {
+    LOG (L_DEB, "[%s] start", __func__);
+}
 
+void ChatServer::nfMessage(const Ptr<Session>& session)
+{
+    LOG (L_DEB, "[%s] start", __func__);
+    {
+        std::lock_guard<std::mutex> guard(server_->_mutex);
+        auto it = server_->_sessions.begin();
+        for ( ; it != server_->_sessions.end(); it++)
+        {
+            it->second->send(session->getMsg());
+        }
+    }
 }
 
 Ptr<Character> ChatServer::getCharacter(int id )
