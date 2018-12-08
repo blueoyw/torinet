@@ -3,7 +3,7 @@ CC = g++
 OPT =
 CFLAGS = -std=c++0x -O2
 #LDFLAGS = -L/usr/local/lib 
-LDFLAGS =
+LDFLAGS = -L../Lib/
 #LIBS = -lpfring -ldag -lpcap -lrt
 LIBS =
 DEF = 
