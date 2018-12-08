@@ -43,6 +43,7 @@ SET ( SRC_FILES
     #"${PROJECT_SOURCE_DIR}/Room.cpp"
     #"${PROJECT_SOURCE_DIR}/WorldServer.cpp"
     "${PROJECT_SOURCE_DIR}/ChatServer.cpp"
+    "${PROJECT_SOURCE_DIR}/Redis.cpp"
     "${PROJECT_SOURCE_DIR}/main.cpp"
     )
 
@@ -60,7 +61,7 @@ ADD_COMPILE_OPTIONS ( -g -Wall -fno-strict-aliasing -std=c++0x -O2 )
 
 # 공통 링크 라이브러리 (-l) sso
 #LINK_LIBRARIES( log4cxx boost_system boost_filesystem boost_program_options boost_thread torinet pthread )
-LINK_LIBRARIES( log4cxx torinet pthread )
+LINK_LIBRARIES( log4cxx torinet pthread hiredis )
 
 # 공통 링크 라이브러리 디렉토리 (-L)
 #LINK_DIRECTORIES ( /usr/lib )
