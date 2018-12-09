@@ -10,13 +10,20 @@ class Redis
 :public boost::enable_shared_from_this<Redis>
 {
 public:
-	Redis( const char* host, const int32_t port)
-        : host_(host), port_(port)
+    enum { REDIS_PORT = 6379 };
+	Redis()
+        : host_(""), port_(REDIS_PORT)
           ,context_(NULL), reply_(NULL)
 	{
 	}
 
-	bool connect();
+    ~Redis()
+    {
+        if (context_ != NULL)
+            redisFree(context_);
+    }
+
+	bool connect(const string host);
 	string send(string command);
 
 	string getHost(){ return host_; }

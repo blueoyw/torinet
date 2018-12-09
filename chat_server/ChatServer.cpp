@@ -3,6 +3,7 @@
 ChatServer::ChatServer(const string name, const ServerConfig& config )
 		: server_(new TcpServer(name, config))
           , ios_(server_->getIoServicePool()->getIoService() )
+          , redis_(new Redis())
           //, m_signals(ios_), m_pIoPool(pool)
 {
     rooms_.clear();
@@ -12,6 +13,12 @@ ChatServer::ChatServer(const string name, const ServerConfig& config )
 void ChatServer::start(string ip, int port)
 {
     LOG(L_INF, "[%s] ip[%s] port[%d]", __func__, ip.c_str(), port);
+
+    if (redis_->connect(ip) == false)
+    {
+        LOG(L_ERR, "[%s] ip[%s] redis connect fail", __func__, ip.c_str());
+        return;
+    }
 
     //register handler
     server_->registerSessionOpenedHandler(
@@ -31,7 +38,6 @@ void ChatServer::start(string ip, int port)
         });
 
     server_->start(ip, port);
-    
 }
 
 void ChatServer::stop(const boost::system::error_code& error, int sigNum)
@@ -89,16 +95,39 @@ void ChatServer::messageHandler(const Ptr<Session>& session)
 void ChatServer::rqCreateUser(const Ptr<Session>& session)
 {
     LOG (L_DEB, "[%s] start", __func__);
+    RqCreateUser* rqCreateUser = (RqCreateUser*)session->getMsg().body();
+    LOG(L_INF,"[%s] session id[%d] id[%s]", __func__, session->getID(), rqCreateUser->id);
+    string id = rqCreateUser->id;
+    string cmd = "zdd rank 0 "+to_string(session->getID());
+
+    string rtn = redis_->send(cmd);
+    if (rtn != "")
+    {
+        LOG(L_INF, "[%s] %s", __func__, rtn.c_str());
+    }
 }
 
 void ChatServer::nfMessage(const Ptr<Session>& session)
 {
     LOG (L_DEB, "[%s] start", __func__);
+    NfMessage* msg = (NfMessage*)session->getMsg().body();
+    int length = strlen(msg->message);
+    LOG(L_INF,"[%s] message[%s] length[%d]", __func__, msg->message, length);
+    string cmd = "zincrby rank "+to_string(length)+" "+to_string(session->getID());
+
+    string rtn = redis_->send(cmd);
+    if (rtn != "")
+    {
+        LOG(L_INF, "[%s] %s", __func__, rtn.c_str());
+    }
+
     {
         std::lock_guard<std::mutex> guard(server_->_mutex);
         auto it = server_->_sessions.begin();
         for ( ; it != server_->_sessions.end(); it++)
         {
+            if (session == it->second)
+                continue;
             it->second->send(session->getMsg());
         }
     }

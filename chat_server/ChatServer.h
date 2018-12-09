@@ -3,31 +3,11 @@
 #include "Incl.h"
 #include <map>
 
-/*
-// Msg process
-bool	createUser(  TcpSessionPtr& sess );
-bool	login(  TcpSessionPtr& sess );
-bool	createParty( TcpSessionPtr& sess );
-bool	joinUser( TcpSessionPtr& sess );
-bool	nfMessage( TcpSessionPtr& sess, int16_t& length);
-
-// callback Msg Handler
-class ServerHandler: public SessionHandler
-{
-public:
-	ServerHandler(){}
-	virtual ~ServerHandler(){}
-
-	virtual bool   read( uint32_t& msgId, int16_t& length, VoidPtr sess, VoidWeakPtr owner );
-	virtual bool   error( const boost::system::error_code& error, VoidPtr sess, VoidWeakPtr owner );
-	virtual bool   connect( VoidPtr sess, VoidWeakPtr owner );
-};
-*/
-
 using namespace std;
 using namespace tori;
 using namespace tori::net;
 
+class Redis;
 class ChatServer {
 public:
 	ChatServer( const string name, const ServerConfig& config );
@@ -55,4 +35,6 @@ private:
     std::mutex lock_;
     map<int, Ptr<Room>>         rooms_;
     map<int, Ptr<Character>>    characters_;
+
+    Ptr<Redis> redis_;
 };

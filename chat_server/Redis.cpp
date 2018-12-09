@@ -1,8 +1,9 @@
 #include "Redis.h"
 
-bool Redis::connect()
+bool Redis::connect(const string ip)
 {
-    context_ = redisConnect(host_.c_str(), port_);
+    host_ = ip;
+    context_ = redisConnect(ip.c_str(), port_);
 
     if (context_ == NULL || context_->err)
     {
