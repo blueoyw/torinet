@@ -34,8 +34,8 @@
 #include "../include/com.h"
 #include "../include/Msg.h"
 
-#include "../lib/TcpSession.h"
-#include "../lib/IoServicePool.h"
+#include "../Src/TcpSession.h"
+#include "../Src/IoServicePool.h"
 
 #include "Client.h"
 #include "Cli.h"

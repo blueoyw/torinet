@@ -36,7 +36,7 @@ void runServer(string address, int port, int numThreads)
 
 int main(int argc, char* argv[])
 {
-	int 	 numThreads = 8;
+	int 	 numThreads = 1;
     boost::asio::io_service ios; 
 	try
 	{

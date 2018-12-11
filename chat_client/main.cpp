@@ -13,7 +13,7 @@ const wc8* g_time = __TIME__;
 
 log4cxx::LoggerPtr logger(log4cxx::Logger::getLogger(""));
 
-ClientVec g_clientVec;
+vector<Ptr<Client>> g_clientVec;
 
 CommandFactoryPtr g_cmdFactory;
 bool g_bTerm;
@@ -29,7 +29,7 @@ static void sigHandler(int sig)
 	LOG(L_FAT, "[%s] signal[%d] end", __func__, sig);
 	for( size_t i=0; i<g_clientVec.size(); i++) 
     {
-		ClientPtr client = g_clientVec[i];
+		Ptr<Client> client = g_clientVec[i];
 		client->stop();
 	}
     g_clientVec.clear();
@@ -43,9 +43,9 @@ static void sigHandler(int sig)
     }
 }
 
-void startRx(ClientPtr client)
+void startRx(Ptr<Client> client)
 {
-	client->startRx();
+	client->start();
 }
 
 //0: master
@@ -132,14 +132,6 @@ int main(int argc, char* argv[])
 		//register command
 		g_cmdFactory.reset(new CommandFactory());
 		g_cmdFactory->registerCommand<CmdCreateUser>("create_user");
-		g_cmdFactory->registerCommand<CmdCreateParty>("create_party");
-		g_cmdFactory->registerCommand<CmdRequestJoin>("request_join");
-		g_cmdFactory->registerCommand<CmdLogin>("login");
-		g_cmdFactory->registerCommand<CmdStartTmr>("start_tmr");
-		g_cmdFactory->registerCommand<CmdSendPkt>("send_pkt");
-		g_cmdFactory->registerCommand<CmdSendEco>("send_eco");
-		g_cmdFactory->registerCommand<CmdStart>("start");
-		g_cmdFactory->registerCommand<CmdStop>("stop");
 
 		//boost::asio::io_service ios;
 		std::vector< boost::shared_ptr<boost::thread> > threads;
@@ -152,8 +144,14 @@ int main(int argc, char* argv[])
 			sprintf(tmp, "%s_%d", argv[2], i );
 			LOG(L_DEB, "[%s] id[%s]",__func__, tmp);
 			id = tmp;
-			ClientPtr client( new Client( host, id));
-			client->session()->setOwner(client);
+            
+            const string name = "localhost";
+            const int port = 20000;
+
+            //ywoh to do
+            tcp::endpoint ep;
+            Ptr<Client> client( new Client(name, port));
+
 			boost::shared_ptr<boost::thread> rx_thread(new boost::thread(startRx, client));
 			threads.push_back(rx_thread);
 			g_clientVec.push_back(client);

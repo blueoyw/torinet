@@ -18,6 +18,23 @@ TcpSession::TcpSession( UniquePtr<tcp::socket> socket, int id, ServerConfig& con
     //TO DO init config
 }
 
+TcpSession::TcpSession( UniquePtr<tcp::socket> socket, ClientConfig& config, tcp::endpoint ep )
+	: _socket( move(socket) )
+	  , _id ( 0 )
+	  , _state ( State::Ready )
+      , _remoteEndpoint(ep)
+{
+    _minReceive = config._minReceive;
+    _maxReceiveBufferSize = config._maxReceiveBufferSize;
+
+	//_strand(ios);
+	//for reuse ip and port
+	_socket->set_option(asio::socket_base::reuse_address(true));
+	//for sending packet no delay
+	_socket->set_option(tcp::no_delay( config._noDelay ));
+    //TO DO init config
+}
+
 bool TcpSession::getRemoteEndpoint( string& ip, uint16_t& port ) const
 {
 	if ( _state == State::Closed )
@@ -37,6 +54,18 @@ void TcpSession::start()
     _openedHandler(shared_from_this());
 
     read( Msg::hdrLength );
+}
+
+void TcpSession::connect()
+{
+	_socket->async_connect( _remoteEndpoint
+                        , [this, self=shared_from_this()]
+                        ( const error_code& ec )
+                        {
+                            if (!ec)
+                                start();
+                        }
+                        );
 }
 
 void TcpSession::read( size_t size )
