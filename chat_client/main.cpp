@@ -131,6 +131,7 @@ int main(int argc, char* argv[])
 
 		//register command
 		g_cmdFactory.reset(new CommandFactory());
+		g_cmdFactory->registerCommand<CmdCreateUser>("create");
 		g_cmdFactory->registerCommand<CmdSendMessge>("send");
 		g_cmdFactory->registerCommand<CmdStop>("stop");
 

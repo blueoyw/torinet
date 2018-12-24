@@ -57,6 +57,15 @@ public:
 
 typedef boost::shared_ptr<CommandFactory> CommandFactoryPtr;
 
+class CmdCreateUser :public BaseCommand {
+public:
+	CmdCreateUser(){};
+	virtual ~CmdCreateUser(){};
+
+	virtual bool handle(string& cli, SplitVector& split);
+	virtual void help();
+};
+
 class CmdSendMessge :public BaseCommand {
 public:
 	CmdSendMessge(){};

@@ -50,8 +50,8 @@ public:
     void closedHandler(const Ptr<Session>& session, const CloseReason& reason);
     void messageHandler(const Ptr<Session>& session);
 
-private:
     Ptr<TcpSession> m_session;
+private:
 	boost::asio::io_service     m_ios;
 	int							m_pid;
 };

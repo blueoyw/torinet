@@ -73,8 +73,8 @@ void ChatServer::closedHandler(const Ptr<Session>& session, const CloseReason& r
 void ChatServer::messageHandler(const Ptr<Session>& session)
 {
     Msg& msg = session->getMsg();
-    int id = session->getID();
-    LOG(L_INF, "[%s] ID[%d] data[%p] size[%d]", __func__, id, msg.body(), msg.bodyLength());
+    int id = msg.head()->msgId;
+    LOG(L_INF, "[%s] SESSION ID[%d] data[%p] size[%d]", __func__, session->getID(), msg.body(), msg.bodyLength());
 
     //handle messge
     switch(id)
@@ -98,7 +98,7 @@ void ChatServer::rqCreateUser(const Ptr<Session>& session)
     RqCreateUser* rqCreateUser = (RqCreateUser*)session->getMsg().body();
     LOG(L_INF,"[%s] session id[%d] id[%s]", __func__, session->getID(), rqCreateUser->id);
     string id = rqCreateUser->id;
-    string cmd = "zdd rank 0 "+to_string(session->getID());
+    string cmd = "zadd rank 0 "+to_string(session->getID());
 
     string rtn = redis_->send(cmd);
     if (rtn != "")
