@@ -57,73 +57,10 @@ public:
 
 typedef boost::shared_ptr<CommandFactory> CommandFactoryPtr;
 
-class CmdCreateUser :public BaseCommand {
+class CmdSendMessge :public BaseCommand {
 public:
-	CmdCreateUser(){};
-	virtual ~CmdCreateUser(){};
-
-	virtual bool handle(string& cli, SplitVector& split);
-	virtual void help();
-};
-
-class CmdCreateParty :public BaseCommand {
-public:
-	CmdCreateParty(){};
-	virtual ~CmdCreateParty(){};
-
-	virtual bool handle(string& cli, SplitVector& split);
-	virtual void help();
-};
-
-class CmdRequestJoin :public BaseCommand {
-public:
-	CmdRequestJoin(){};
-	virtual ~CmdRequestJoin(){};
-
-	virtual bool handle(string& cli, SplitVector& split);
-	virtual void help();
-};
-
-class CmdLogin :public BaseCommand {
-public:
-	CmdLogin(){};
-	virtual ~CmdLogin(){};
-
-	virtual bool handle(string& cli, SplitVector& split);
-	virtual void help();
-};
-
-class CmdStartTmr :public BaseCommand {
-public:
-	CmdStartTmr(){};
-	virtual ~CmdStartTmr(){};
-
-	virtual bool handle(string& cli, SplitVector& split);
-	virtual void help();
-};
-
-class CmdSendPkt :public BaseCommand {
-public:
-	CmdSendPkt(){};
-	virtual ~CmdSendPkt(){};
-
-	virtual bool handle(string& cli, SplitVector& split);
-	virtual void help();
-};
-
-class CmdSendEco :public BaseCommand {
-public:
-	CmdSendEco(){};
-	virtual ~CmdSendEco(){};
-
-	virtual bool handle(string& cli, SplitVector& split);
-	virtual void help();
-};
-
-class CmdStart :public BaseCommand {
-public:
-	CmdStart(){};
-	virtual ~CmdStart(){};
+	CmdSendMessge(){};
+	virtual ~CmdSendMessge(){};
 
 	virtual bool handle(string& cli, SplitVector& split);
 	virtual void help();

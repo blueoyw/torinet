@@ -14,27 +14,17 @@ class Client
 public:
 	static const int MASTER_CLIENT = 0;
 
-	Client( const string& host, const int port)
-	{
-		m_pid = getpid();
-
-        /*
-		m_signals.add(SIGINT);
-		m_signals.add(SIGTERM);
-		m_signals.async_wait(boost::bind(&Client::stop, this) );
-        */
-        ClientConfig config;
-		boost::asio::ip::tcp::endpoint ep(
-				boost::asio::ip::address::from_string(host), port);
-        UniquePtr<tcp::socket> socket(new tcp::socket(m_ios));
-        m_session = Ptr<TcpSession>(new TcpSession( *socket, config, ep));
-	}
+	Client( const string& host, const int port);
 
     void registerHandler();
 
     void start()
     {
+        SLOG;
+        registerHandler();
         m_session->connect();
+		LOG(L_FAT,"[%s] %d client start", __func__, m_pid);
+        m_ios.run();
     }
 
 	void stop()
@@ -54,6 +44,11 @@ public:
 		//m_ios.post( boost::bind(&Client::doWrite, shared_from_this(), msg));
         m_session->send(msg);
 	}
+
+    //handlers
+    void openedHandler(const Ptr<Session>& session);
+    void closedHandler(const Ptr<Session>& session, const CloseReason& reason);
+    void messageHandler(const Ptr<Session>& session);
 
 private:
     Ptr<TcpSession> m_session;

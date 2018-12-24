@@ -71,7 +71,7 @@ void TcpServer::listen(tcp::endpoint ep)
 
 void TcpServer::startAccept()
 {
-    LOG (L_INF, "[%s]", __func__);
+    LOG (L_INF, "start [%s]", __func__);
     UniquePtr<tcp::socket> socket(new tcp::socket(_ioServicePool->getIoService()));
     _socket = std::move(socket);
     _acceptor->async_accept( *_socket,

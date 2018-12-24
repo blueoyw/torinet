@@ -131,7 +131,8 @@ int main(int argc, char* argv[])
 
 		//register command
 		g_cmdFactory.reset(new CommandFactory());
-		g_cmdFactory->registerCommand<CmdCreateUser>("create_user");
+		g_cmdFactory->registerCommand<CmdSendMessge>("send");
+		g_cmdFactory->registerCommand<CmdStop>("stop");
 
 		//boost::asio::io_service ios;
 		std::vector< boost::shared_ptr<boost::thread> > threads;
@@ -145,10 +146,9 @@ int main(int argc, char* argv[])
 			LOG(L_DEB, "[%s] id[%s]",__func__, tmp);
 			id = tmp;
             
-            const string name = "localhost";
+            const string name = "127.0.0.1";
             const int port = 20000;
 
-            //ywoh to do
             tcp::endpoint ep;
             Ptr<Client> client( new Client(name, port));
 

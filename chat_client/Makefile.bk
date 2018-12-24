@@ -5,14 +5,14 @@ HOST_CC = g++
 #HOST_OPT = -O3
 HOST_OPT = -O2
 
-LFLAGS = -L/usr/local/lib -L../Lib/
-LIBS = -llog4cxx -lboost_system -lboost_filesystem -lboost_program_options -lboost_thread -ltorinet -lpthread
+LFLAGS = -L/usr/local/lib -L../lib/
+LIBS = -llog4cxx -lboost_system -lboost_filesystem -lboost_program_options -lboost_thread -ltorinet
 IFLAGS = -I/usr/local/include -I./
 HOST_CFLAGS = -std=c++0x -Wall -fno-strict-aliasing -g $(HOST_OPT) $(IFLAGS)
 
 OBJS = $(SRCS:.cpp=.o)
-SRCS = Client.cpp Cli.cpp main.cpp
-#SRCS = Client.cpp main.cpp
+#SRCS = Client.cpp Cli.cpp main.cpp
+SRCS = Client.cpp main.cpp
 
 %.o: %.cpp
 	$(HOST_CC) $(HOST_CFLAGS) -c -o $@ $<

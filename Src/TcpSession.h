@@ -18,7 +18,7 @@ public:
 	TcpSession(const TcpSession&) = delete;
 	TcpSession& operator=(const TcpSession&) = delete;
 	TcpSession( UniquePtr<tcp::socket> socket, int id, ServerConfig& config );
-	TcpSession( UniquePtr<tcp::socket> socket, ClientConfig& config, tcp::endpoint ep);
+	TcpSession( UniquePtr<tcp::socket> socket, ClientConfig& config, tcp::endpoint& ep);
 
 	virtual ~TcpSession() {}
 

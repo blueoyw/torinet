@@ -18,7 +18,7 @@ TcpSession::TcpSession( UniquePtr<tcp::socket> socket, int id, ServerConfig& con
     //TO DO init config
 }
 
-TcpSession::TcpSession( UniquePtr<tcp::socket> socket, ClientConfig& config, tcp::endpoint ep )
+TcpSession::TcpSession( UniquePtr<tcp::socket> socket, ClientConfig& config, tcp::endpoint& ep )
 	: _socket( move(socket) )
 	  , _id ( 0 )
 	  , _state ( State::Ready )
@@ -29,9 +29,9 @@ TcpSession::TcpSession( UniquePtr<tcp::socket> socket, ClientConfig& config, tcp
 
 	//_strand(ios);
 	//for reuse ip and port
-	_socket->set_option(asio::socket_base::reuse_address(true));
+	//_socket->set_option(asio::socket_base::reuse_address(true));
 	//for sending packet no delay
-	_socket->set_option(tcp::no_delay( config._noDelay ));
+	//_socket->set_option(tcp::no_delay( config._noDelay ));
     //TO DO init config
 }
 
@@ -46,6 +46,7 @@ bool TcpSession::getRemoteEndpoint( string& ip, uint16_t& port ) const
 
 void TcpSession::start()
 {
+    SLOG;
     _state = State::Opening;
     //TO DO allocate buffer
 
@@ -58,12 +59,19 @@ void TcpSession::start()
 
 void TcpSession::connect()
 {
+    SLOG;
 	_socket->async_connect( _remoteEndpoint
                         , [this, self=shared_from_this()]
                         ( const error_code& ec )
                         {
                             if (!ec)
+                            {
+                                _socket->set_option(asio::socket_base::reuse_address(true));
+                                _socket->set_option(tcp::no_delay(true));
                                 start();
+                            }
+                            else
+                                LOG(L_ERR, "[%s] error_code[%s]", __func__, ec.message().c_str());
                         }
                         );
 }
@@ -76,7 +84,10 @@ void TcpSession::read( size_t size )
                             , [this, self=shared_from_this()]
                             ( const error_code& ec, size_t  ) 
                             {
-                                handleReadHeader( ec );
+                                if (!ec)
+                                    handleReadHeader( ec );
+                                else
+                                    LOG(L_INF, "[%s] error_code[%s]", __func__, ec.message(    ).c_str());
                             }
                             ) ;
 }
