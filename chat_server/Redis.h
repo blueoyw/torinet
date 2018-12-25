@@ -24,7 +24,7 @@ public:
     }
 
 	bool connect(const string host);
-	string send(string command);
+	bool send(string command);
 
 	string getHost(){ return host_; }
 	int32_t	getPort(){ return port_; }

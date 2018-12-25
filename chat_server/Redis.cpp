@@ -16,27 +16,53 @@ bool Redis::connect(const string ip)
     return true;
 }
 
-string Redis::send(string command)
+bool Redis::send(string command)
 {
-    string rtn = "";
+    LOG(L_INF, "[%s] command[%s]", __func__, command.c_str());
+    bool rtn = false;
     if (context_ == NULL) 
     {
-        printf("Error context is NULL\n");
+        LOG(L_ERR, "[%s] context is NULL", __func__);
         return rtn; 
     }   
 
     reply_ = (redisReply*)redisCommand(context_, command.c_str());
     if (reply_ == NULL) {
-        printf("redisCommand reply is NULL: %s\n", context_->errstr);
+        LOG(L_ERR, "[%s] reply is NULL. %s", __func__, context_->errstr);
         return rtn; 
     }   
+
     if (reply_->type == REDIS_REPLY_ERROR) {
+        LOG(L_ERR, "[%s] Command Error. %s", __func__, reply_->str);
         printf("Command Error: %s\n", reply_->str);
-        freeReplyObject(reply_);
-        return rtn; 
     }   
-    printf("Command reply: %s\n", reply_->str);
-    rtn = reply_->str;
+    else if (reply_->type == REDIS_REPLY_STRING) 
+    {
+        rtn = true;
+        LOG(L_DEB, "[%s] REDIS_REPLY_STRING reply_->type[%d] reply_->str[%s]."
+            , __func__
+            ,reply_->type, reply_->str);
+
+    }
+    else if (reply_->type == REDIS_REPLY_INTEGER) 
+    {
+        rtn = true;
+        LOG(L_DEB, "[%s] REDIS_REPLY_INTEGER reply_->type[%d] reply_->integer[%d]."
+            , __func__
+            ,reply_->type, reply_->integer);
+
+    }
+    else if (reply_->type == REDIS_REPLY_ARRAY) 
+    {
+        rtn = true;
+        for (int i=0; i<reply_->elements; i++)
+        {
+            LOG(L_DEB, "[%s]REDIS_REPLY_ARRAY[%d] reply_->type[%d] reply_->elements[%s]."
+                , __func__, i
+                ,reply_->type, reply_->element[i]->str);
+        }
+    }
+
     freeReplyObject(reply_);
     return rtn;
 }

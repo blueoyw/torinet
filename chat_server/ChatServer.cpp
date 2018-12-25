@@ -98,13 +98,10 @@ void ChatServer::rqCreateUser(const Ptr<Session>& session)
     RqCreateUser* rqCreateUser = (RqCreateUser*)session->getMsg().body();
     LOG(L_INF,"[%s] session id[%d] id[%s]", __func__, session->getID(), rqCreateUser->id);
     string id = rqCreateUser->id;
-    string cmd = "zadd rank 0 "+to_string(session->getID());
+    string cmd = "zadd user:ranking 0 "+to_string(session->getID());
+    LOG(L_INF,"[%s] cmd[%s]", __func__, cmd.c_str());
 
-    string rtn = redis_->send(cmd);
-    if (rtn != "")
-    {
-        LOG(L_INF, "[%s] %s", __func__, rtn.c_str());
-    }
+    redis_->send(cmd);
 }
 
 void ChatServer::nfMessage(const Ptr<Session>& session)
@@ -115,12 +112,7 @@ void ChatServer::nfMessage(const Ptr<Session>& session)
     LOG(L_INF,"[%s] message[%s] length[%d]", __func__, msg->message, length);
     string cmd = "zincrby rank "+to_string(length)+" "+to_string(session->getID());
 
-    string rtn = redis_->send(cmd);
-    if (rtn != "")
-    {
-        LOG(L_INF, "[%s] %s", __func__, rtn.c_str());
-    }
-
+    redis_->send(cmd);
     {
         std::lock_guard<std::mutex> guard(server_->_mutex);
         auto it = server_->_sessions.begin();
